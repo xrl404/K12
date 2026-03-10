@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Norway Freshwater Springs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #e8f0ec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Jost', sans-serif;
+
+    }
+
+    /* Animated water background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 80%, rgba(100,160,130,0.25) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 20%, rgba(150,200,180,0.2) 0%, transparent 55%),
+        radial-gradient(ellipse 100% 100% at 50% 50%, #d4e8de 0%, #c2ddd0 100%);
+      z-index: 0;
+    }
+
+    /* Ripple rings */
+    .ripple {
+      position: fixed;
+      border-radius: 50%;
+      border: 1px solid rgba(80,140,110,0.15);
+      animation: ripple 8s ease-out infinite;
+      z-index: 0;
+    }
+    .ripple:nth-child(1) { width: 300px; height: 300px; bottom: -80px; left: -80px; animation-delay: 0s; }
+    .ripple:nth-child(2) { width: 500px; height: 500px; bottom: -150px; left: -150px; animation-delay: 1.5s; }
+    .ripple:nth-child(3) { width: 700px; height: 700px; bottom: -220px; left: -220px; animation-delay: 3s; }
+    .ripple:nth-child(4) { width: 250px; height: 250px; top: -60px; right: -60px; animation-delay: 2s; }
+    .ripple:nth-child(5) { width: 420px; height: 420px; top: -120px; right: -120px; animation-delay: 4s; }
+
+    @keyframes ripple {
+      0% { transform: scale(0.95); opacity: 0.6; }
+      50% { transform: scale(1.05); opacity: 0.2; }
+      100% { transform: scale(0.95); opacity: 0.6; }
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      max-width: 560px;
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.8);
+      border-radius: 2px;
+      padding: 52px 52px 48px;
+      box-shadow:
+        0 2px 40px rgba(60,110,85,0.08),
+        0 1px 0 rgba(255,255,255,0.9) inset;
+      animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .eyebrow {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #5a9070;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .eyebrow::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, rgba(90,144,112,0.4), transparent);
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: 38px;
+      line-height: 1.1;
+      color: #1a3628;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+    h1 em {
+      font-style: italic;
+      color: #3a7055;
+    }
+
+    .divider {
+      width: 40px;
+      height: 1px;
+      background: linear-gradient(to right, #5a9070, transparent);
+      margin: 22px 0;
+    }
+
+    p {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 14.5px;
+      line-height: 1.85;
+      color: #334d3e;
+      letter-spacing: 0.01em;
+    }
+
+    .drop {
+      float: left;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 62px;
+      line-height: 0.75;
+      margin: 6px 12px 0 0;
+      color: #3a7055;
+      font-weight: 400;
+    }
+
+    .tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+    .tag {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #4a8060;
+      border: 1px solid rgba(74,128,96,0.35);
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+
+  <div class="card">
+    <div class="eyebrow">K12 Zone · Norway virtual field trip</div>
+    <h1>Norway's <em>Freshwater</em><br>Springs</h1>
+    <div class="divider"></div>
+    <p>
+      <span class="drop">N</span>orway is renowned for its abundant and pristine freshwater springs — an integral part of the country's natural landscape. These springs often emerge in mountainous and forested areas, fed by melting snow, glaciers, and underground aquifers, making them some of the cleanest sources of drinking water in Europe.
+    </p>
+    <p style="margin-top:14px;">
+      Many Norwegian springs have very low levels of pollutants and minerals, resulting in crisp, clear water sometimes bottled commercially. Historically significant for drinking, agriculture, and traditional health practices, they are now protected under strict environmental regulations — ensuring they remain unspoiled habitats and beloved destinations for hikers and nature explorers alike.
+    </p>
+  </div>
+</body>
+</html>
