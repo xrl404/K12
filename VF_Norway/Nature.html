@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Norway Nature Scenery</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #e8f0ec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Jost', sans-serif;
+      padding: 40px 16px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 80%, rgba(100,160,130,0.25) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 20%, rgba(150,200,180,0.2) 0%, transparent 55%),
+        radial-gradient(ellipse 100% 100% at 50% 50%, #d4e8de 0%, #c2ddd0 100%);
+      z-index: 0;
+    }
+
+    .ripple {
+      position: fixed;
+      border-radius: 50%;
+      border: 1px solid rgba(80,140,110,0.15);
+      animation: ripple 8s ease-out infinite;
+      z-index: 0;
+    }
+    .ripple:nth-child(1) { width: 300px; height: 300px; bottom: -80px; left: -80px; animation-delay: 0s; }
+    .ripple:nth-child(2) { width: 500px; height: 500px; bottom: -150px; left: -150px; animation-delay: 1.5s; }
+    .ripple:nth-child(3) { width: 700px; height: 700px; bottom: -220px; left: -220px; animation-delay: 3s; }
+    .ripple:nth-child(4) { width: 250px; height: 250px; top: -60px; right: -60px; animation-delay: 2s; }
+    .ripple:nth-child(5) { width: 420px; height: 420px; top: -120px; right: -120px; animation-delay: 4s; }
+
+    @keyframes ripple {
+      0% { transform: scale(0.95); opacity: 0.6; }
+      50% { transform: scale(1.05); opacity: 0.2; }
+      100% { transform: scale(0.95); opacity: 0.6; }
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      max-width: 560px;
+      width: 100%;
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.8);
+      border-radius: 2px;
+      padding: 52px 52px 48px;
+      box-shadow:
+        0 2px 40px rgba(60,110,85,0.08),
+        0 1px 0 rgba(255,255,255,0.9) inset;
+      animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .eyebrow {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #5a9070;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .eyebrow::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, rgba(90,144,112,0.4), transparent);
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: 38px;
+      line-height: 1.1;
+      color: #1a3628;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+    h1 em {
+      font-style: italic;
+      color: #3a7055;
+    }
+
+    .divider {
+      width: 40px;
+      height: 1px;
+      background: linear-gradient(to right, #5a9070, transparent);
+      margin: 22px 0;
+    }
+
+    p {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 14.5px;
+      line-height: 1.85;
+      color: #334d3e;
+      letter-spacing: 0.01em;
+    }
+
+    .drop {
+      float: left;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 62px;
+      line-height: 0.75;
+      margin: 6px 12px 0 0;
+      color: #3a7055;
+      font-weight: 400;
+    }
+
+    /* 3D model embed */
+    .model-wrap {
+      margin: 26px 0;
+      border-radius: 2px;
+      overflow: hidden;
+      border: 1px solid rgba(90,144,112,0.25);
+      box-shadow: 0 4px 24px rgba(60,110,85,0.1);
+    }
+
+    .model-label {
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(90,144,112,0.2);
+      padding: 9px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .model-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #5a9070;
+      box-shadow: 0 0 6px rgba(90,144,112,0.6);
+      animation: pulse 2.5s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    .model-label-text {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #5a9070;
+      font-weight: 300;
+    }
+
+    .model-label-title {
+      margin-left: auto;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      font-style: italic;
+      color: #3a7055;
+      opacity: 0.75;
+    }
+
+    .sketchfab-embed-wrapper {
+      display: block;
+      width: 100%;
+      height: 300px;
+    }
+
+    .sketchfab-embed-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+
+  <div class="card">
+    <div class="eyebrow">K12 Zone · Norway virtual field trip</div>
+    <h1>Norway's <em>Nature</em><br>Scenery</h1>
+    <div class="divider"></div>
+
+    <p>
+      <span class="drop">N</span>orway is home to some of the most dramatic and unspoiled landscapes on Earth. From thundering waterfalls cascading down sheer cliff faces to the hushed, snow-dusted plateaus of the far north, the country's terrain was shaped by millions of years of glacial carving and the relentless pull of the sea.
+    </p>
+
+    <div class="model-wrap">
+      <div class="model-label">
+        <div class="model-dot"></div>
+        <span class="model-label-text">Interactive 3D model</span>
+        <span class="model-label-title">Geirangerfjord · 1:125,000 scale</span>
+      </div>
+      <div class="sketchfab-embed-wrapper">
+        <iframe
+          title="Geirangerfjord Region, Norway (1:125,000 scale)"
+          frameborder="0"
+          allowfullscreen
+          mozallowfullscreen="true"
+          webkitallowfullscreen="true"
+          allow="autoplay; fullscreen; xr-spatial-tracking"
+          src="https://sketchfab.com/models/410778750e73451e9c2393a5b9eca59c/embed?autospin=1&autostart=1&preload=1&ui_controls=0&ui_infos=0&ui_stop=0&ui_watermark=1&ui_annotations=0&ui_help=0&ui_settings=0&ui_vr=0">
+        </iframe>
+      </div>
+    </div>
+
+    <p>
+      The <em>Geirangerfjord</em>, shown above, is one of Norway's most celebrated natural wonders and a UNESCO World Heritage Site. Stretching 15 kilometres inland, its sheer cliffs rise over 1,400 metres above the water. Waterfalls such as the Seven Sisters and the Suitor cascade down its walls year-round, fed by snowmelt from the peaks above.
+    </p>
+
+    <p style="margin-top:14px;">
+      Beyond the fjords, Norway's landscapes span the vast <em>Hardangervidda</em> plateau — Europe's largest mountain plain — all the way to the Arctic archipelago of Svalbard, where polar bears roam freely and the midnight sun never sets for months at a time. These wild places are protected as part of Norway's deep national commitment to preserving its natural heritage for generations to come.
+    </p>
+  </div>
+</body>
+</html>
