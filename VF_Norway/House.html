@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Norway Traditional Houses</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #e8f0ec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Jost', sans-serif;
+      padding: 40px 16px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 80%, rgba(100,160,130,0.25) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 20%, rgba(150,200,180,0.2) 0%, transparent 55%),
+        radial-gradient(ellipse 100% 100% at 50% 50%, #d4e8de 0%, #c2ddd0 100%);
+      z-index: 0;
+    }
+
+    .ripple {
+      position: fixed;
+      border-radius: 50%;
+      border: 1px solid rgba(80,140,110,0.15);
+      animation: ripple 8s ease-out infinite;
+      z-index: 0;
+    }
+    .ripple:nth-child(1) { width: 300px; height: 300px; bottom: -80px; left: -80px; animation-delay: 0s; }
+    .ripple:nth-child(2) { width: 500px; height: 500px; bottom: -150px; left: -150px; animation-delay: 1.5s; }
+    .ripple:nth-child(3) { width: 700px; height: 700px; bottom: -220px; left: -220px; animation-delay: 3s; }
+    .ripple:nth-child(4) { width: 250px; height: 250px; top: -60px; right: -60px; animation-delay: 2s; }
+    .ripple:nth-child(5) { width: 420px; height: 420px; top: -120px; right: -120px; animation-delay: 4s; }
+
+    @keyframes ripple {
+      0% { transform: scale(0.95); opacity: 0.6; }
+      50% { transform: scale(1.05); opacity: 0.2; }
+      100% { transform: scale(0.95); opacity: 0.6; }
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      max-width: 560px;
+      width: 100%;
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.8);
+      border-radius: 2px;
+      padding: 52px 52px 48px;
+      box-shadow:
+        0 2px 40px rgba(60,110,85,0.08),
+        0 1px 0 rgba(255,255,255,0.9) inset;
+      animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .eyebrow {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #5a9070;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .eyebrow::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, rgba(90,144,112,0.4), transparent);
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: 38px;
+      line-height: 1.1;
+      color: #1a3628;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+    h1 em {
+      font-style: italic;
+      color: #3a7055;
+    }
+
+    .divider {
+      width: 40px;
+      height: 1px;
+      background: linear-gradient(to right, #5a9070, transparent);
+      margin: 22px 0;
+    }
+
+    p {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 14.5px;
+      line-height: 1.85;
+      color: #334d3e;
+      letter-spacing: 0.01em;
+    }
+
+    .drop {
+      float: left;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 62px;
+      line-height: 0.75;
+      margin: 6px 12px 0 0;
+      color: #3a7055;
+      font-weight: 400;
+    }
+
+    /* Image gallery */
+    .gallery {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin: 26px 0;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .gallery-main {
+      grid-column: 1 / -1;
+      height: 195px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .gallery-thumb {
+      height: 118px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .gallery img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
+      filter: saturate(0.88) brightness(0.95);
+    }
+
+    .gallery-main:hover img,
+    .gallery-thumb:hover img {
+      transform: scale(1.04);
+    }
+
+    .img-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 8px 12px;
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+      background: linear-gradient(to top, rgba(20,45,30,0.6), transparent);
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+    }
+  </style>
+</head>
+<body>
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+  <div class="ripple"></div>
+
+  <div class="card">
+    <div class="eyebrow">K12 Zone · Norway virtual field trip</div>
+    <h1>Norway's <em>Traditional</em><br>Houses</h1>
+    <div class="divider"></div>
+
+    <p>
+      <span class="drop">F</span>or over a thousand years, Norwegians have built homes designed to withstand harsh winters and blend naturally into the landscape. The most iconic style is the turf-roofed <em>laftehus</em> — a log cabin whose sod rooftop sprouts with living grass, insulating the home against bitter cold and heavy snowfall.
+    </p>
+
+    <div class="gallery">
+      <div class="gallery-main">
+        <img
+          src="https://img.truvvle.com/?src=aHR0cHM6Ly9pbWFnZXMuaGl2ZS5ibG9nL3AvOTlweVU1R2Exa3dzOTFlY0pqa0FOQXpmc3RwNWlldEo0QUN2azlOVlNXUnF5SzNWbm9XektHckp2UURzampBVGVhVjZ1ZXR3ekc3QVZUR0ZZWHk2UnNVcENVMVoxd2VtZDRCWHd6enRmN0ZldEdzTnJOUHVNSjFSWWNYZjdpWHZ3eC8_Zm9ybWF0PW1hdGNoJm1vZGU9Zml0&width=1920"
+          alt="Norwegian landscape with traditional houses"
+        />
+        <div class="img-caption">Turf-roof cabin · Norwegian highlands</div>
+      </div>
+      <div class="gallery-thumb">
+        <img
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqjiv0_UpIoToGxDE2MCW9-dAbwc7I5VkQSw&s"
+          alt="Red rorbu fisherman cabins on Lofoten"
+        />
+        <div class="img-caption">Rorbu · Lofoten islands</div>
+      </div>
+      <div class="gallery-thumb">
+        <img
+          src="https://cdn.shopify.com/s/files/1/0996/9954/files/Screenshot_2022-05-19_at_11.04.01_1024x1024.png?v=1652954683"
+          alt="Traditional Norwegian wooden architecture"
+        />
+        <div class="img-caption">Log cabin · Viking-era craft</div>
+      </div>
+    </div>
+
+    <p>
+      These grass-roofed houses, known as <em>torvtak</em>, date back to the Viking Age and remained common throughout rural Norway well into the 20th century. The thick log walls were crafted using a traditional notching technique called <em>laft</em>, interlocking timber corners without nails — a method so durable that many original structures still stand today.
+    </p>
+
+    <p style="margin-top:14px;">
+      Along the coast, the <em>rorbu</em> — a distinctive red fisherman's cabin perched on stilts above the water — became a symbol of Norwegian maritime life. Originally built to house seasonal fishermen in the Lofoten islands, these humble dwellings are now treasured cultural landmarks and popular heritage stays for visitors exploring Norway's fjord country.
+    </p>
+  </div>
+</body>
+</html>
