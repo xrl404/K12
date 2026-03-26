@@ -255,22 +255,22 @@
 
 <script>
 // ─── State ───────────────────────────────────────────────────────────────────
-let data       = null;
-let fileBase   = '';   // directory of the .vfjf file, with trailing slash, relative to site root
+let data        = null;
+let fileBase    = '';   // directory of the .vfjf file, with trailing slash, relative to site root
 let currentNode = null;
-let isPlaying  = false;
-let visitedNodes = new Set();
-const player   = document.getElementById('player');
+let isPlaying   = false;
+let visitedNodes = new Set();  // nodes visited via forward navigation (not back)
+const player    = document.getElementById('player');
 
 // ─── Init ────────────────────────────────────────────────────────────────────
 async function init() {
   const params  = new URLSearchParams(location.search);
-  const filePath = params.get('file');   // e.g. "Virtual_Fieldtrips/Louvre_Museum/Louvre_Museum.VFJF"
+  const filePath = params.get('file');   // e.g. "Virtual_Feildtrips/Louvre_Museum/Louvre_Museum.VFJF"
 
   if (!filePath) {
     showError(
       'No file specified.<br>' +
-      '<small>Add <code>?file=Virtual_Fieldtrips/TripName/TripName.VFJF</code> to the URL.</small>'
+      '<small>Add <code>?file=Virtual_Feildtrips/TripName/TripName.VFJF</code> to the URL.</small>'
     );
     return;
   }
@@ -301,7 +301,7 @@ async function init() {
   document.getElementById('title-text').textContent = title;
 
   renderBook();
-  goTo(data.start_node, true);
+  goTo(data.start_node, false);
 }
 
 // ─── Path helpers ─────────────────────────────────────────────────────────────
@@ -316,7 +316,7 @@ async function init() {
 function resolveFromPageRoot(relativePath) {
   // Build a URL using the page's origin so '/' means the site root.
   const url = new URL('/' + relativePath, location.origin);
-  return url.pathname; // returns e.g. /Virtual_Fieldtrips/Louvre_Museum/
+  return url.pathname; // returns e.g. /Virtual_Feildtrips/Louvre_Museum/
 }
 
 /**
@@ -330,19 +330,20 @@ function buildAudioUrl(audioPath) {
 }
 
 // ─── Navigation ──────────────────────────────────────────────────────────────
-function goTo(nodeId, playAudio) {
+// isBack: narrator audio always plays; no choice audio precedes it
+// forward: choice audio plays first, then narrator audio on arrival
+function goTo(nodeId, isBack) {
   const node = data.nodes[nodeId];
   if (!node) { console.warn('Unknown node:', nodeId); return; }
 
-  const isBack = visitedNodes.has(nodeId);
-  visitedNodes.add(nodeId);
+  if (!isBack) visitedNodes.add(nodeId);
   currentNode = nodeId;
 
   renderNarrator(node);
   renderChoices(node);
 
-  // Play narrator audio only on first visit
-  if (playAudio && !isBack && node.audio) {
+  // Narrator audio always plays on arrival, forward or back
+  if (node.audio) {
     playAudioFile(buildAudioUrl(node.audio));
   }
 }
@@ -350,16 +351,18 @@ function goTo(nodeId, playAudio) {
 function choiceClicked(choice) {
   if (isPlaying) return;
 
-  const targetIsNew = !visitedNodes.has(choice.next);
+  const isBack = !choice.audio; // back choices have no audio field
 
-  if (choice.audio) {
+  if (!isBack) {
+    // Forward: play choice audio first, then navigate to node (narrator plays there)
     lockChoices(true);
     playAudioFile(buildAudioUrl(choice.audio), () => {
-      goTo(choice.next, targetIsNew);
+      goTo(choice.next, false);
       lockChoices(false);
     });
   } else {
-    goTo(choice.next, targetIsNew);
+    // Back: no choice audio, navigate immediately, narrator plays on arrival
+    goTo(choice.next, true);
   }
 }
 
