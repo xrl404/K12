@@ -1,1 +1,441 @@
-//init
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dialogue Player</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Crimson+Pro:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #1a1208;
+    --parchment: #f5edd8;
+    --parchment-dark: #e8d9b8;
+    --parchment-mid: #eedfc4;
+    --gold: #c9972c;
+    --gold-light: #e8b84b;
+    --gold-dim: #a07820;
+    --shadow: rgba(26, 18, 8, 0.18);
+    --muted: #6b5a3e;
+    --disabled: #b8a88a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--ink);
+    font-family: 'Crimson Pro', Georgia, serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, #2a1f08 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, #1f1408 0%, transparent 50%);
+  }
+
+  #app {
+    width: 100%;
+    max-width: 680px;
+  }
+
+  /* ── Header ── */
+  #header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    transform: translateY(-12px);
+    animation: fadeUp 0.7s 0.1s forwards;
+  }
+
+  #header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    color: var(--gold-light);
+    letter-spacing: 0.04em;
+    text-shadow: 0 2px 16px rgba(201,151,44,0.25);
+  }
+
+  #header .subtitle {
+    font-size: 0.85rem;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+  }
+
+  /* ── Book card ── */
+  #book {
+    background: var(--parchment);
+    border-radius: 4px;
+    box-shadow:
+      0 2px 0 var(--gold-dim),
+      0 8px 40px rgba(0,0,0,0.55),
+      inset 0 1px 0 rgba(255,255,255,0.6);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp 0.7s 0.3s forwards;
+    position: relative;
+  }
+
+  /* Spine stripe */
+  #book::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dim) 100%);
+  }
+
+  /* ── Narrator box ── */
+  #narrator {
+    padding: 2.2rem 2.4rem 2rem 2.8rem;
+    border-bottom: 1px solid var(--parchment-dark);
+    position: relative;
+    min-height: 130px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  #narrator-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    font-weight: 500;
+  }
+
+  #narrator-text {
+    font-size: 1.18rem;
+    line-height: 1.75;
+    color: var(--ink);
+    font-weight: 300;
+    font-style: italic;
+    flex: 1;
+  }
+
+  /* Audio waveform indicator */
+  #audio-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    color: var(--gold-dim);
+    min-height: 1.2rem;
+    transition: opacity 0.3s;
+  }
+
+  #audio-indicator.hidden { opacity: 0; }
+
+  .wave {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+  }
+
+  .wave span {
+    display: block;
+    width: 2px;
+    background: var(--gold);
+    border-radius: 2px;
+    animation: waveBounce 0.8s ease-in-out infinite;
+  }
+  .wave span:nth-child(1) { height: 6px;  animation-delay: 0s; }
+  .wave span:nth-child(2) { height: 12px; animation-delay: 0.1s; }
+  .wave span:nth-child(3) { height: 8px;  animation-delay: 0.2s; }
+  .wave span:nth-child(4) { height: 14px; animation-delay: 0.05s; }
+  .wave span:nth-child(5) { height: 6px;  animation-delay: 0.15s; }
+
+  @keyframes waveBounce {
+    0%, 100% { transform: scaleY(1); }
+    50%       { transform: scaleY(0.3); }
+  }
+
+  /* ── Choices ── */
+  #choices {
+    padding: 1.6rem 2.4rem 2rem 2.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  #choices-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    font-weight: 500;
+    margin-bottom: 0.2rem;
+  }
+
+  .choice-btn {
+    background: transparent;
+    border: 1px solid var(--parchment-dark);
+    border-left: 3px solid transparent;
+    border-radius: 2px;
+    padding: 0.85rem 1.2rem;
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 1.05rem;
+    color: var(--ink);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.18s, background 0.18s, color 0.18s, transform 0.12s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .choice-btn::before {
+    content: '›';
+    color: var(--gold);
+    font-size: 1.3rem;
+    line-height: 1;
+    flex-shrink: 0;
+    transition: transform 0.18s;
+  }
+
+  .choice-btn:hover:not(:disabled) {
+    background: var(--parchment-mid);
+    border-left-color: var(--gold);
+    transform: translateX(3px);
+  }
+
+  .choice-btn:hover:not(:disabled)::before {
+    transform: translateX(2px);
+  }
+
+  .choice-btn:active:not(:disabled) {
+    transform: translateX(3px) scale(0.99);
+  }
+
+  /* Locked state — audio is playing */
+  .choice-btn:disabled {
+    color: var(--disabled);
+    cursor: not-allowed;
+    border-left-color: transparent;
+  }
+
+  .choice-btn:disabled::before {
+    color: var(--disabled);
+  }
+
+  /* Already-visited style (back buttons etc.) */
+  .choice-btn.visited {
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  /* ── Loading / error states ── */
+  #status {
+    padding: 3rem 2.4rem;
+    text-align: center;
+    color: var(--muted);
+    font-style: italic;
+    font-size: 1.05rem;
+  }
+
+  #status .big { font-size: 2rem; margin-bottom: 0.8rem; }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    animation: fadeUp 0.35s ease forwards;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 480px) {
+    body { padding: 1rem; }
+    #narrator, #choices { padding-left: 1.8rem; padding-right: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="header">
+    <h1 id="title-text">Dialogue</h1>
+    <div class="subtitle" id="subtitle-text">Interactive Story</div>
+  </div>
+
+  <div id="book">
+    <div id="status"><div class="big">📖</div>Loading…</div>
+  </div>
+</div>
+
+<audio id="player"></audio>
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+let data = null;
+let currentNode = null;
+let isPlaying = false;
+let visitedNodes = new Set();       // nodes the user has already seen
+const player = document.getElementById('player');
+
+// ─── Load data ───────────────────────────────────────────────────────────────
+async function init() {
+  const params = new URLSearchParams(location.search);
+  const url = params.get('file');
+
+  if (!url) {
+    showError('No file specified.<br><small>Add <code>?file=path/to/file.vfjf</code> to the URL.</small>');
+    return;
+  }
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    data = await res.json();
+  } catch (e) {
+    showError(`Could not load <em>${url}</em>.<br><small>${e.message}</small>`);
+    return;
+  }
+
+  // Set page / header titles
+  if (data.root) {
+    document.title = data.root;
+    document.getElementById('title-text').textContent = data.root;
+  }
+
+  renderBook();
+  goTo(data.start_node, /*playAudio=*/true);
+}
+
+// ─── Navigation ──────────────────────────────────────────────────────────────
+function goTo(nodeId, playAudio = true) {
+  const node = data.nodes[nodeId];
+  if (!node) { console.warn('Unknown node:', nodeId); return; }
+
+  const isBack = visitedNodes.has(nodeId);
+  visitedNodes.add(nodeId);
+  currentNode = nodeId;
+
+  renderNarrator(node);
+  renderChoices(node);
+
+  // Play the node's audio only if moving forward
+  if (playAudio && !isBack && node.audio) {
+    playAudioFile(buildAudioUrl(node.audio));
+  }
+}
+
+function choiceClicked(choice) {
+  if (isPlaying) return;
+
+  if (choice.audio) {
+    // Play the choice audio, then navigate
+    lockChoices(true);
+    playAudioFile(buildAudioUrl(choice.audio), () => {
+      goTo(choice.next, /*playAudio=*/!visitedNodes.has(choice.next));
+      lockChoices(false);
+    });
+  } else {
+    goTo(choice.next, /*playAudio=*/!visitedNodes.has(choice.next));
+  }
+}
+
+// ─── Audio ───────────────────────────────────────────────────────────────────
+function buildAudioUrl(audioPath) {
+  // audioPath is relative to data.root; construct relative to the loaded file URL
+  const params = new URLSearchParams(location.search);
+  const fileUrl = params.get('file');
+  const base = fileUrl.substring(0, fileUrl.lastIndexOf('/') + 1);
+  return base + audioPath;
+}
+
+function playAudioFile(src, onEnd) {
+  player.pause();
+  player.src = src;
+  isPlaying = true;
+  showWave(true);
+  lockChoices(true);
+
+  player.play().catch(() => {
+    // Autoplay blocked or file missing — just continue
+    finishAudio(onEnd);
+  });
+
+  player.onended = () => finishAudio(onEnd);
+  player.onerror = () => finishAudio(onEnd);
+}
+
+function finishAudio(onEnd) {
+  isPlaying = false;
+  showWave(false);
+  lockChoices(false);
+  if (onEnd) onEnd();
+}
+
+// ─── Rendering ───────────────────────────────────────────────────────────────
+function renderBook() {
+  document.getElementById('book').innerHTML = `
+    <div id="narrator">
+      <div id="narrator-label">Narrator</div>
+      <div id="narrator-text"></div>
+      <div id="audio-indicator" class="hidden">
+        <div class="wave">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        Playing…
+      </div>
+    </div>
+    <div id="choices">
+      <div id="choices-label">Your response</div>
+    </div>
+  `;
+}
+
+function renderNarrator(node) {
+  const el = document.getElementById('narrator-text');
+  el.style.animation = 'none';
+  el.offsetHeight; // reflow
+  el.style.animation = '';
+  el.classList.add('fade-in');
+  el.textContent = node.text || '';
+}
+
+function renderChoices(node) {
+  const container = document.getElementById('choices');
+  // Remove old buttons (keep label)
+  const label = document.getElementById('choices-label');
+  container.innerHTML = '';
+  container.appendChild(label);
+
+  (node.choices || []).forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn fade-in';
+    if (visitedNodes.has(choice.next)) btn.classList.add('visited');
+    btn.textContent = choice.text;
+    btn.addEventListener('click', () => choiceClicked(choice));
+    container.appendChild(btn);
+  });
+}
+
+function lockChoices(locked) {
+  document.querySelectorAll('.choice-btn').forEach(btn => {
+    btn.disabled = locked;
+  });
+}
+
+function showWave(visible) {
+  const el = document.getElementById('audio-indicator');
+  if (!el) return;
+  el.classList.toggle('hidden', !visible);
+}
+
+function showError(html) {
+  document.getElementById('book').innerHTML = `<div id="status"><div class="big">⚠️</div>${html}</div>`;
+}
+
+// ─── Go ──────────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
