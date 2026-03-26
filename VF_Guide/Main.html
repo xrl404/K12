@@ -301,7 +301,11 @@ async function init() {
   document.getElementById('title-text').textContent = title;
 
   renderBook();
-  goTo(data.start_node, false);
+  goTo(data.start_node);
+  const startNode = data.nodes[data.start_node];
+  if (startNode && startNode.audio) {
+    playAudioFile(buildAudioUrl(startNode.audio));
+  }
 }
 
 // ─── Path helpers ─────────────────────────────────────────────────────────────
@@ -330,39 +334,30 @@ function buildAudioUrl(audioPath) {
 }
 
 // ─── Navigation ──────────────────────────────────────────────────────────────
-// isBack: narrator audio always plays; no choice audio precedes it
-// forward: choice audio plays first, then narrator audio on arrival
-function goTo(nodeId, isBack) {
+function goTo(nodeId) {
   const node = data.nodes[nodeId];
   if (!node) { console.warn('Unknown node:', nodeId); return; }
 
-  if (!isBack) visitedNodes.add(nodeId);
+  visitedNodes.add(nodeId);
   currentNode = nodeId;
 
   renderNarrator(node);
   renderChoices(node);
-
-  // Narrator audio always plays on arrival, forward or back
-  if (node.audio) {
-    playAudioFile(buildAudioUrl(node.audio));
-  }
 }
 
 function choiceClicked(choice) {
   if (isPlaying) return;
 
-  const isBack = !choice.audio; // back choices have no audio field
-
-  if (!isBack) {
-    // Forward: play choice audio first, then navigate to node (narrator plays there)
-    lockChoices(true);
-    playAudioFile(buildAudioUrl(choice.audio), () => {
-      goTo(choice.next, false);
-      lockChoices(false);
-    });
+  if (choice.back) {
+    // Back: navigate silently, no audio, no locking
+    goTo(choice.next);
   } else {
-    // Back: no choice audio, navigate immediately, narrator plays on arrival
-    goTo(choice.next, true);
+    // Forward: navigate, then play narrator audio and lock until it finishes
+    goTo(choice.next);
+    const node = data.nodes[choice.next];
+    if (node && node.audio) {
+      playAudioFile(buildAudioUrl(node.audio));
+    }
   }
 }
 
