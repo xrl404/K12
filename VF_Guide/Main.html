@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dialogue Player</title>
+<title>Virtual Field Trip</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Crimson+Pro:wght@300;400;500&display=swap');
 
@@ -15,7 +15,6 @@
     --gold: #c9972c;
     --gold-light: #e8b84b;
     --gold-dim: #a07820;
-    --shadow: rgba(26, 18, 8, 0.18);
     --muted: #6b5a3e;
     --disabled: #b8a88a;
   }
@@ -35,10 +34,7 @@
       radial-gradient(ellipse at 80% 20%, #1f1408 0%, transparent 50%);
   }
 
-  #app {
-    width: 100%;
-    max-width: 680px;
-  }
+  #app { width: 100%; max-width: 680px; }
 
   /* ── Header ── */
   #header {
@@ -125,16 +121,13 @@
     font-size: 0.78rem;
     color: var(--gold-dim);
     min-height: 1.2rem;
+    opacity: 1;
     transition: opacity 0.3s;
   }
 
-  #audio-indicator.hidden { opacity: 0; }
+  #audio-indicator.hidden { opacity: 0; pointer-events: none; }
 
-  .wave {
-    display: flex;
-    gap: 2px;
-    align-items: center;
-  }
+  .wave { display: flex; gap: 2px; align-items: center; }
 
   .wave span {
     display: block;
@@ -183,7 +176,6 @@
     cursor: pointer;
     text-align: left;
     transition: border-color 0.18s, background 0.18s, color 0.18s, transform 0.12s;
-    position: relative;
     display: flex;
     align-items: center;
     gap: 0.6rem;
@@ -204,32 +196,20 @@
     transform: translateX(3px);
   }
 
-  .choice-btn:hover:not(:disabled)::before {
-    transform: translateX(2px);
-  }
+  .choice-btn:hover:not(:disabled)::before { transform: translateX(2px); }
+  .choice-btn:active:not(:disabled) { transform: translateX(3px) scale(0.99); }
 
-  .choice-btn:active:not(:disabled) {
-    transform: translateX(3px) scale(0.99);
-  }
-
-  /* Locked state — audio is playing */
   .choice-btn:disabled {
     color: var(--disabled);
     cursor: not-allowed;
     border-left-color: transparent;
   }
 
-  .choice-btn:disabled::before {
-    color: var(--disabled);
-  }
+  .choice-btn:disabled::before { color: var(--disabled); }
 
-  /* Already-visited style (back buttons etc.) */
-  .choice-btn.visited {
-    font-style: italic;
-    color: var(--muted);
-  }
+  .choice-btn.visited { font-style: italic; color: var(--muted); }
 
-  /* ── Loading / error states ── */
+  /* ── Loading / error ── */
   #status {
     padding: 3rem 2.4rem;
     text-align: center;
@@ -239,17 +219,20 @@
   }
 
   #status .big { font-size: 2rem; margin-bottom: 0.8rem; }
+  #status code {
+    background: var(--parchment-dark);
+    padding: 0.1em 0.4em;
+    border-radius: 3px;
+    font-style: normal;
+    font-size: 0.9em;
+  }
 
-  /* ── Animations ── */
   @keyframes fadeUp {
     to { opacity: 1; transform: translateY(0); }
   }
 
-  .fade-in {
-    animation: fadeUp 0.35s ease forwards;
-  }
+  .fade-in { animation: fadeUp 0.35s ease forwards; }
 
-  /* ── Responsive ── */
   @media (max-width: 480px) {
     body { padding: 1rem; }
     #narrator, #choices { padding-left: 1.8rem; padding-right: 1.4rem; }
@@ -260,10 +243,9 @@
 
 <div id="app">
   <div id="header">
-    <h1 id="title-text">Dialogue</h1>
+    <h1 id="title-text">Virtual Field Trip</h1>
     <div class="subtitle" id="subtitle-text">Interactive Story</div>
   </div>
-
   <div id="book">
     <div id="status"><div class="big">📖</div>Loading…</div>
   </div>
@@ -273,43 +255,82 @@
 
 <script>
 // ─── State ───────────────────────────────────────────────────────────────────
-let data = null;
+let data       = null;
+let fileBase   = '';   // directory of the .vfjf file, with trailing slash, relative to site root
 let currentNode = null;
-let isPlaying = false;
-let visitedNodes = new Set();       // nodes the user has already seen
-const player = document.getElementById('player');
+let isPlaying  = false;
+let visitedNodes = new Set();
+const player   = document.getElementById('player');
 
-// ─── Load data ───────────────────────────────────────────────────────────────
+// ─── Init ────────────────────────────────────────────────────────────────────
 async function init() {
-  const params = new URLSearchParams(location.search);
-  const url = params.get('file');
+  const params  = new URLSearchParams(location.search);
+  const filePath = params.get('file');   // e.g. "Virtual_Fieldtrips/Louvre_Museum/Louvre_Museum.VFJF"
 
-  if (!url) {
-    showError('No file specified.<br><small>Add <code>?file=path/to/file.vfjf</code> to the URL.</small>');
+  if (!filePath) {
+    showError(
+      'No file specified.<br>' +
+      '<small>Add <code>?file=Virtual_Fieldtrips/TripName/TripName.VFJF</code> to the URL.</small>'
+    );
     return;
   }
 
+  // Derive the base directory for resolving audio paths.
+  // filePath is always relative to the repo root (same origin as Main.html).
+  // Strip the filename to get the folder, then prepend a leading slash so it's
+  // an absolute path from the site root — safe regardless of where Main.html lives.
+  const slashIdx = filePath.lastIndexOf('/');
+  const relDir   = slashIdx >= 0 ? filePath.substring(0, slashIdx + 1) : '';
+  // Resolve to absolute path from site root
+  fileBase = resolveFromPageRoot(relDir);
+
+  // Fetch the VFJF (JSON) file
+  const fetchUrl = resolveFromPageRoot(filePath);
   try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const res = await fetch(fetchUrl);
+    if (!res.ok) throw new Error(`HTTP ${res.status} — ${fetchUrl}`);
     data = await res.json();
   } catch (e) {
-    showError(`Could not load <em>${url}</em>.<br><small>${e.message}</small>`);
+    showError(`Could not load <em>${filePath}</em>.<br><small>${e.message}</small>`);
     return;
   }
 
-  // Set page / header titles
-  if (data.root) {
-    document.title = data.root;
-    document.getElementById('title-text').textContent = data.root;
-  }
+  // Update page titles
+  const title = data.root || 'Virtual Field Trip';
+  document.title = title;
+  document.getElementById('title-text').textContent = title;
 
   renderBook();
-  goTo(data.start_node, /*playAudio=*/true);
+  goTo(data.start_node, true);
+}
+
+// ─── Path helpers ─────────────────────────────────────────────────────────────
+/**
+ * Given a path that is relative to the repo root (not to Main.html's location),
+ * return an absolute URL path rooted at the GitHub Pages site root.
+ *
+ * On GitHub Pages the site root equals the origin, so we just prefix with '/'.
+ * If the repo is served from a subpath (e.g. /K12/) this function handles it by
+ * anchoring everything relative to the origin root.
+ */
+function resolveFromPageRoot(relativePath) {
+  // Build a URL using the page's origin so '/' means the site root.
+  const url = new URL('/' + relativePath, location.origin);
+  return url.pathname; // returns e.g. /Virtual_Fieldtrips/Louvre_Museum/
+}
+
+/**
+ * Given an audio path from the VFJF (e.g. "audio/entrance.mp3"),
+ * return the full absolute path by joining it with the .vfjf file's directory.
+ */
+function buildAudioUrl(audioPath) {
+  // audioPath is relative to the VFJF file's own folder (fileBase is absolute from site root)
+  const url = new URL(fileBase + audioPath, location.origin);
+  return url.href;
 }
 
 // ─── Navigation ──────────────────────────────────────────────────────────────
-function goTo(nodeId, playAudio = true) {
+function goTo(nodeId, playAudio) {
   const node = data.nodes[nodeId];
   if (!node) { console.warn('Unknown node:', nodeId); return; }
 
@@ -320,7 +341,7 @@ function goTo(nodeId, playAudio = true) {
   renderNarrator(node);
   renderChoices(node);
 
-  // Play the node's audio only if moving forward
+  // Play narrator audio only on first visit
   if (playAudio && !isBack && node.audio) {
     playAudioFile(buildAudioUrl(node.audio));
   }
@@ -329,27 +350,20 @@ function goTo(nodeId, playAudio = true) {
 function choiceClicked(choice) {
   if (isPlaying) return;
 
+  const targetIsNew = !visitedNodes.has(choice.next);
+
   if (choice.audio) {
-    // Play the choice audio, then navigate
     lockChoices(true);
     playAudioFile(buildAudioUrl(choice.audio), () => {
-      goTo(choice.next, /*playAudio=*/!visitedNodes.has(choice.next));
+      goTo(choice.next, targetIsNew);
       lockChoices(false);
     });
   } else {
-    goTo(choice.next, /*playAudio=*/!visitedNodes.has(choice.next));
+    goTo(choice.next, targetIsNew);
   }
 }
 
 // ─── Audio ───────────────────────────────────────────────────────────────────
-function buildAudioUrl(audioPath) {
-  // audioPath is relative to data.root; construct relative to the loaded file URL
-  const params = new URLSearchParams(location.search);
-  const fileUrl = params.get('file');
-  const base = fileUrl.substring(0, fileUrl.lastIndexOf('/') + 1);
-  return base + audioPath;
-}
-
 function playAudioFile(src, onEnd) {
   player.pause();
   player.src = src;
@@ -357,10 +371,7 @@ function playAudioFile(src, onEnd) {
   showWave(true);
   lockChoices(true);
 
-  player.play().catch(() => {
-    // Autoplay blocked or file missing — just continue
-    finishAudio(onEnd);
-  });
+  player.play().catch(() => finishAudio(onEnd)); // gracefully skip if blocked/missing
 
   player.onended = () => finishAudio(onEnd);
   player.onerror = () => finishAudio(onEnd);
@@ -395,7 +406,7 @@ function renderBook() {
 function renderNarrator(node) {
   const el = document.getElementById('narrator-text');
   el.style.animation = 'none';
-  el.offsetHeight; // reflow
+  void el.offsetHeight; // force reflow to restart animation
   el.style.animation = '';
   el.classList.add('fade-in');
   el.textContent = node.text || '';
@@ -403,8 +414,7 @@ function renderNarrator(node) {
 
 function renderChoices(node) {
   const container = document.getElementById('choices');
-  // Remove old buttons (keep label)
-  const label = document.getElementById('choices-label');
+  const label     = document.getElementById('choices-label');
   container.innerHTML = '';
   container.appendChild(label);
 
@@ -419,19 +429,17 @@ function renderChoices(node) {
 }
 
 function lockChoices(locked) {
-  document.querySelectorAll('.choice-btn').forEach(btn => {
-    btn.disabled = locked;
-  });
+  document.querySelectorAll('.choice-btn').forEach(btn => btn.disabled = locked);
 }
 
 function showWave(visible) {
   const el = document.getElementById('audio-indicator');
-  if (!el) return;
-  el.classList.toggle('hidden', !visible);
+  if (el) el.classList.toggle('hidden', !visible);
 }
 
 function showError(html) {
-  document.getElementById('book').innerHTML = `<div id="status"><div class="big">⚠️</div>${html}</div>`;
+  document.getElementById('book').innerHTML =
+    `<div id="status"><div class="big">⚠️</div>${html}</div>`;
 }
 
 // ─── Go ──────────────────────────────────────────────────────────────────────
