@@ -203,6 +203,8 @@ body {
 
 #audio-indicator.hidden { opacity: 0; pointer-events: none; }
 
+
+
 .wave { display: flex; align-items: center; gap: 2px; }
 
 .wave span {
@@ -289,12 +291,13 @@ body {
 }
 .choice-btn:hover:not(:disabled)::before { transform: translateX(2px); }
 
+
 .choice-btn:disabled {
   color: var(--disabled);
   cursor: not-allowed;
   background: var(--surface);
 }
-.choice-btn:disabled::before { color: var(--text-3); }
+.choice-btn:disabled::before { color: var(--text-3); content: '›'; }
 
 .choice-btn.visited {
   font-style: italic;
@@ -311,9 +314,7 @@ body {
 }
 
 #status .big { font-size: 2.2rem; margin-bottom: 0.75rem; }
-
 #status p { font-style: italic; }
-
 #status code {
   background: var(--surface-2);
   color: var(--accent);
@@ -370,50 +371,89 @@ let isPlaying    = false;
 let visitedNodes = new Set();
 const player     = document.getElementById('player');
 
-// ─── Helpers ──────────────────────────────────────────────
+// ─── Audio Cache ──────────────────────────────────────────
+// Maps full URL → { blob, objectUrl, state: 'loading'|'ready'|'error' }
+const audioCache = new Map();
 
 /**
- * Escape a string for safe insertion into HTML text content.
- * Returns a DocumentFragment-safe text node when used with DOM APIs,
- * but we expose this for the rare places that still build HTML strings
- * (the static error screen, which uses only literal safe strings now).
+ * Start fetching an audio file in the background and store the result.
+ * Safe to call multiple times for the same URL — deduplicates automatically.
  */
-function escHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;');
+function prefetchAudio(url) {
+  if (audioCache.has(url)) return; // already fetching or fetched
+
+  const entry = { blob: null, objectUrl: null, state: 'loading' };
+  audioCache.set(url, entry);
+
+  fetch(url)
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.blob();
+    })
+    .then(blob => {
+      entry.blob      = blob;
+      entry.objectUrl = URL.createObjectURL(blob);
+      entry.state     = 'ready';
+      onAudioCached(url);
+    })
+    .catch(err => {
+      console.warn('Prefetch failed:', url, err);
+      entry.state = 'error';
+    });
+}
+
+/** Called when a background prefetch finishes. */
+function onAudioCached(url) {
+  const entry = audioCache.get(url);
+  console.log(`[prefetch] ready: ${url} (${entry?.blob?.size ?? '?'} bytes)`);
+}
+
+/** Kick off prefetching for every reachable node from the given node. */
+function prefetchNodeAudio(nodeId) {
+  const node = data.nodes[nodeId];
+  if (!node || !node.choices) return;
+
+  node.choices.forEach(choice => {
+    const nextNode = data.nodes[choice.next];
+    if (!nextNode || !nextNode.audio) return;
+    const safePath = sanitiseAudioPath(nextNode.audio);
+    if (!safePath) return;
+    prefetchAudio(buildAudioUrl(safePath));
+  });
 }
 
 /**
- * Create a text node — the safest way to put user data into the DOM
- * without any risk of it being interpreted as HTML.
+ * Return the best source for a given audio URL:
+ * - If cached as a blob object URL → use that (instant)
+ * - Otherwise → fall back to the network URL (legacy behaviour)
  */
+function resolveAudioSrc(url) {
+  const entry = audioCache.get(url);
+  if (entry && entry.state === 'ready' && entry.objectUrl) {
+    console.log(`[audio] playing from cache: ${url}`);
+    return entry.objectUrl;
+  }
+  console.log(`[audio] cache miss, streaming: ${url}`);
+  return url;
+}
+
+
+// ─── Helpers ──────────────────────────────────────────────
+
 function txt(str) {
   return document.createTextNode(String(str ?? ''));
 }
 
-/**
- * Validate that an audio path is a relative path (not a javascript: URI
- * or an absolute URL to an untrusted origin).
- * Returns the sanitised URL string, or null if the path is rejected.
- */
 function sanitiseAudioPath(audioPath) {
   if (typeof audioPath !== 'string' || audioPath.trim() === '') return null;
-  // Reject anything with a scheme (javascript:, data:, https://, etc.)
-  // A relative path must NOT contain ":" before the first "/"
   const colonIdx = audioPath.indexOf(':');
   const slashIdx = audioPath.indexOf('/');
   if (colonIdx !== -1 && (slashIdx === -1 || colonIdx < slashIdx)) return null;
-  // Reject attempts to escape the virtual directory
   if (audioPath.includes('..')) return null;
   return audioPath;
 }
 
 function buildAudioUrl(audioPath) {
-  // fileBase always starts with '/' and ends with '/'
   return fileBase + audioPath;
 }
 
@@ -423,16 +463,11 @@ async function init() {
   const filePath = params.get('file');
 
   if (!filePath) {
-    showError(
-      '⚠️',
-      'No file specified.',
-      // FIX: safe literal string — no user data interpolated
-      'Add ?file=Virtual_Fieldtrips/TripName/TripName.VFJF to the URL.'
-    );
+    showError('⚠️', 'No file specified.',
+      'Add ?file=Virtual_Fieldtrips/TripName/TripName.VFJF to the URL.');
     return;
   }
 
-  // Derive the directory that audio paths will be relative to
   const slashIdx = filePath.lastIndexOf('/');
   const relDir   = slashIdx >= 0 ? filePath.slice(0, slashIdx + 1) : '';
   fileBase       = '/' + relDir;
@@ -442,25 +477,20 @@ async function init() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     data = await res.json();
   } catch (e) {
-    // FIX: e.message and filePath are displayed via DOM text nodes in showError,
-    // not interpolated into an innerHTML string.
     showError('⚠️', 'Could not load trip file.', e.message, filePath);
     return;
   }
 
-  // Validate minimal structure
   if (!data.nodes || !data.start_node || !data.nodes[data.start_node]) {
     showError('⚠️', 'Invalid trip file.', 'Missing nodes or start_node.');
     return;
   }
 
-  // FIX: set document.title via property (automatically text-safe)
   const tripTitle = String(data.root || 'Virtual Field Trip').trim();
   document.title  = tripTitle;
 
-  // FIX: build the <h1> content with DOM nodes, not innerHTML
   const h1 = document.getElementById('title-text');
-  h1.textContent = ''; // clear existing content
+  h1.textContent = '';
   const words = tripTitle.split(' ');
   if (words.length > 1) {
     h1.appendChild(txt(words.slice(0, -1).join(' ') + ' '));
@@ -469,19 +499,23 @@ async function init() {
   em.appendChild(txt(words[words.length - 1]));
   h1.appendChild(em);
 
+  // Eagerly prefetch the very first node's audio so Begin Trip is instant
+  const startNode = data.nodes[data.start_node];
+  if (startNode && startNode.audio) {
+    const safePath = sanitiseAudioPath(startNode.audio);
+    if (safePath) prefetchAudio(buildAudioUrl(safePath));
+  }
+
   showSplash(tripTitle);
 }
 
-// ─── Splash (satisfies browser autoplay policy) ───────────
+// ─── Splash ───────────────────────────────────────────────
 function showSplash(tripTitle) {
   const startNode = data.nodes[data.start_node];
   const hasAudio  = !!(startNode && startNode.audio);
 
-  // FIX: build the splash screen with DOM APIs instead of innerHTML,
-  // so tripTitle (and any other data-derived content) is always treated
-  // as plain text, never as markup.
   const book = document.getElementById('book');
-  book.textContent = ''; // clear
+  book.textContent = '';
 
   const splash = document.createElement('div');
   splash.id = 'splash';
@@ -492,7 +526,7 @@ function showSplash(tripTitle) {
 
   const title = document.createElement('div');
   title.id = 'splash-title';
-  title.appendChild(txt(tripTitle)); // safe text node
+  title.appendChild(txt(tripTitle));
 
   const hint = document.createElement('p');
   hint.id = 'splash-hint';
@@ -505,7 +539,7 @@ function showSplash(tripTitle) {
   btn.textContent = 'Begin Trip →';
   btn.addEventListener('click', () => {
     renderShell();
-    goTo(data.start_node, /* playAudio */ true);
+    goTo(data.start_node, true);
   });
 
   splash.appendChild(icon);
@@ -515,10 +549,8 @@ function showSplash(tripTitle) {
   book.appendChild(splash);
 }
 
-// ─── Shell (narrator + choices region) ───────────────────
+// ─── Shell ────────────────────────────────────────────────
 function renderShell() {
-  // FIX: all content here is static/trusted, but we use DOM construction
-  // consistently to prevent future regressions if dynamic data is added.
   const book = document.getElementById('book');
   book.textContent = '';
 
@@ -538,9 +570,7 @@ function renderShell() {
 
   const wave = document.createElement('div');
   wave.className = 'wave';
-  for (let i = 0; i < 5; i++) {
-    wave.appendChild(document.createElement('span'));
-  }
+  for (let i = 0; i < 5; i++) wave.appendChild(document.createElement('span'));
   audioIndicator.appendChild(wave);
   audioIndicator.appendChild(txt('Playing…'));
 
@@ -572,10 +602,15 @@ function goTo(nodeId, playAudio = false) {
   renderNarrator(node);
   renderChoices(node);
 
+  // Kick off background prefetch for all choices immediately
+  prefetchNodeAudio(nodeId);
+  console.log(`[prefetch] queuing choices for node: ${nodeId}`);
+
   if (playAudio && node.audio) {
     const safePath = sanitiseAudioPath(node.audio);
     if (safePath) {
-      playAudioFile(buildAudioUrl(safePath));
+      const url = buildAudioUrl(safePath);
+      playAudioFile(resolveAudioSrc(url), url);
     } else {
       console.warn('Rejected unsafe audio path:', node.audio);
     }
@@ -584,11 +619,15 @@ function goTo(nodeId, playAudio = false) {
 
 function choiceClicked(choice) {
   if (isPlaying) return;
-  goTo(choice.next, /* playAudio */ !choice.back);
+  goTo(choice.next, !choice.back);
 }
 
 // ─── Audio ────────────────────────────────────────────────
-function playAudioFile(src) {
+/**
+ * Play audio from src. canonicalUrl is used only for cache look-ups
+ * (src might already be a blob: URL).
+ */
+function playAudioFile(src, canonicalUrl) {
   player.pause();
   player.src = src;
   isPlaying  = true;
@@ -605,8 +644,15 @@ function playAudioFile(src) {
 
   player.onended = done;
   player.onerror = (e) => {
-    console.warn('Audio error:', src, e);
-    done();
+    // If the blob URL somehow failed, retry with the original network URL
+    if (src !== canonicalUrl) {
+      console.warn('Blob playback failed, retrying via network:', canonicalUrl);
+      player.src = canonicalUrl;
+      player.play().catch(err => { console.warn('Retry failed:', err); done(); });
+    } else {
+      console.warn('Audio error:', src, e);
+      done();
+    }
   };
 
   player.play().catch((e) => {
@@ -618,21 +664,17 @@ function playAudioFile(src) {
 // ─── Rendering ────────────────────────────────────────────
 function renderNarrator(node) {
   const el = document.getElementById('narrator-text');
-  // Restart animation
   el.style.animation = 'none';
   void el.offsetHeight;
   el.style.animation = '';
   el.classList.add('fade-in');
-  // FIX: was already using textContent (safe) — kept as-is
   el.textContent = node.text || '';
 }
 
 function renderChoices(node) {
   const container = document.getElementById('choices');
-
-  // Keep the label, remove old buttons
   const label = document.getElementById('choices-label');
-  container.textContent = ''; // FIX: was innerHTML = '' (safe here, but textContent is clearer)
+  container.textContent = '';
   container.appendChild(label);
 
   const choices = node.choices || [];
@@ -648,7 +690,7 @@ function renderChoices(node) {
     const btn = document.createElement('button');
     btn.className = 'choice-btn fade-in';
     if (visitedNodes.has(choice.next)) btn.classList.add('visited');
-    // FIX: was already using textContent (safe) — kept as-is
+
     btn.textContent = choice.text;
     btn.addEventListener('click', () => choiceClicked(choice));
     container.appendChild(btn);
@@ -667,16 +709,6 @@ function setWave(visible) {
 }
 
 // ─── Error screen ─────────────────────────────────────────
-/**
- * FIX: was using innerHTML with potentially user-controlled strings
- * (e.message, filePath). Now builds the error UI with DOM nodes so
- * every string is treated as plain text, never markup.
- *
- * @param {string} icon      - Emoji / safe literal
- * @param {string} headline  - Short description (may be user-derived)
- * @param {string} [detail]  - Technical detail, e.g. e.message
- * @param {string} [file]    - The file path that failed to load
- */
 function showError(icon, headline, detail = '', file = '') {
   const book = document.getElementById('book');
   book.textContent = '';
@@ -699,7 +731,7 @@ function showError(icon, headline, detail = '', file = '') {
     pFile.style.cssText = 'margin-top:0.5rem;font-size:0.85rem;';
     pFile.appendChild(txt('File: '));
     const code = document.createElement('code');
-    code.appendChild(txt(file)); // safe text node — no innerHTML
+    code.appendChild(txt(file));
     pFile.appendChild(code);
     status.appendChild(pFile);
   }
@@ -707,7 +739,7 @@ function showError(icon, headline, detail = '', file = '') {
   if (detail) {
     const p2 = document.createElement('p');
     p2.style.cssText = 'margin-top:0.35rem;font-size:0.85rem;';
-    p2.appendChild(txt(detail)); // safe text node — no innerHTML
+    p2.appendChild(txt(detail));
     status.appendChild(p2);
   }
 
