@@ -1,5 +1,5 @@
 {
-  "root": "Louvre Museum",
+  "root": "Louvre_Museum",
   "start_node": "entrance",
   "thank_you": "audio/thank_you.mp3",
   "nodes": {
@@ -26,7 +26,7 @@
       ]
     },
     "what_is_louvre": {
-      "text": "The Louvre used to be a palace where kings lived. Now it's a museum with thousands of artworks!",
+      "text": "The Louvre used to be a palace where kings lived. Now it's a museum with thousands of artwork!",
       "audio": "audio/what_is_louvre.mp3",
       "choices": [
         {
@@ -43,8 +43,7 @@
         },
         {
           "text": "Go back",
-          "next": "entrance",
-          "back": true
+          "next": "entrance"
         }
       ]
     },
@@ -76,13 +75,12 @@
       "choices": [
         {
           "text": "Go back",
-          "next": "what_is_louvre",
-          "back": true
+          "next": "what_is_louvre"
         }
       ]
     },
     "famous_art": {
-      "text": "There are many famous artworks! Do you want to hear about one?",
+      "text": "There are many famous works of art here! Do you want to hear about one?",
       "audio": "audio/famous_art.mp3",
       "choices": [
         {
@@ -99,8 +97,7 @@
         },
         {
           "text": "Go back",
-          "next": "entrance",
-          "back": true
+          "next": "entrance"
         }
       ]
     },

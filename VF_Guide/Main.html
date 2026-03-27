@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Virtual Field Trip</title>
+<title>Virtual Field tour</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
 <style>
@@ -467,7 +467,7 @@ body {
 <div id="app">
   <div id="header">
     <div id="header-text">
-      <h1 id="title-text">Virtual <em>Field Trip</em></h1>
+      <h1 id="title-text">Virtual <em>Field tour</em></h1>
       <div class="subtitle" id="subtitle-text">K12 Guide</div>
     </div>
     <div id="progress-widget">
@@ -492,7 +492,7 @@ let currentNode  = null;
 let isPlaying    = false;
 let visitedNodes = new Set();  // nodeIds the user has landed on
 let totalNodes   = 0;
-let tripComplete = false;
+let tourComplete = false;
 const player     = document.getElementById('player');
 
 // ─── Audio Cache ──────────────────────────────────────────
@@ -558,8 +558,8 @@ function updateProgress() {
   fill.style.width  = pct + '%';
   pctEl.textContent = pct + '%';
 
-  if (pct >= 100 && !tripComplete) {
-    tripComplete = true;
+  if (pct >= 100 && !tourComplete) {
+    tourComplete = true;
     fill.classList.add('complete');
     pctEl.classList.add('complete');
     document.getElementById('book').classList.add('complete');
@@ -592,7 +592,7 @@ async function init() {
 
   if (!filePath) {
     showError('⚠️', 'No file specified.',
-      'Add ?file=Virtual_Fieldtrips/TripName/TripName.VFJF to the URL.');
+      'Add ?file=Virtual_Fieldtours/tourName/tourName.VFJF to the URL.');
     return;
   }
 
@@ -605,23 +605,23 @@ async function init() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     data = await res.json();
   } catch (e) {
-    showError('⚠️', 'Could not load trip file.', e.message, filePath);
+    showError('⚠️', 'Could not load tour file.', e.message, filePath);
     return;
   }
 
   if (!data.nodes || !data.start_node || !data.nodes[data.start_node]) {
-    showError('⚠️', 'Invalid trip file.', 'Missing nodes or start_node.');
+    showError('⚠️', 'Invalid tour file.', 'Missing nodes or start_node.');
     return;
   }
 
   totalNodes = computeTotalNodes();
 
-  const tripTitle = String(data.root || 'Virtual Field Trip').trim();
-  document.title  = tripTitle;
+  const tourTitle = String(data.root || 'Virtual Field tour').trim();
+  document.title  = tourTitle;
 
   const h1 = document.getElementById('title-text');
   h1.textContent = '';
-  const words = tripTitle.split(' ');
+  const words = tourTitle.split(' ');
   if (words.length > 1) h1.appendChild(txt(words.slice(0, -1).join(' ') + ' '));
   const em = document.createElement('em');
   em.appendChild(txt(words[words.length - 1]));
@@ -639,11 +639,11 @@ async function init() {
     if (safePath) prefetchAudio(buildAudioUrl(safePath));
   }
 
-  showSplash(tripTitle);
+  showSplash(tourTitle);
 }
 
 // ─── Splash ───────────────────────────────────────────────
-function showSplash(tripTitle) {
+function showSplash(tourTitle) {
   const startNode = data.nodes[data.start_node];
   const hasAudio  = !!(startNode && startNode.audio);
   const book = document.getElementById('book');
@@ -658,17 +658,17 @@ function showSplash(tripTitle) {
 
   const title = document.createElement('div');
   title.id = 'splash-title';
-  title.appendChild(txt(tripTitle));
+  title.appendChild(txt(tourTitle));
 
   const hint = document.createElement('p');
   hint.id = 'splash-hint';
   hint.textContent = hasAudio
     ? 'Audio narration is included. Make sure your sound is on.'
-    : 'Use the choices below to explore each stop on the trip.';
+    : 'Use the choices below to explore each stop on the tour.';
 
   const btn = document.createElement('button');
   btn.id = 'start-btn';
-  btn.textContent = 'Begin Trip →';
+  btn.textContent = 'Begin tour →';
   btn.addEventListener('click', () => {
     document.getElementById('progress-widget').style.display = 'flex';
     renderShell();
@@ -751,7 +751,7 @@ function renderShell() {
   cbIcon.className = 'cb-icon';
   cbIcon.textContent = '🎉';
   const cbText = document.createElement('span');
-  cbText.textContent = "You've explored the entire trip — great work!";
+  cbText.textContent = "You've explored the entire tour — great work!";
   completeBanner.appendChild(cbIcon);
   completeBanner.appendChild(cbText);
   choices.appendChild(completeBanner);
@@ -862,7 +862,7 @@ function renderChoices(node) {
   if (choices.length === 0) {
     const end = document.createElement('p');
     end.style.cssText = 'color:var(--text-3);font-size:0.85rem;font-style:italic;margin-top:0.5rem;';
-    end.textContent = '— End of trip —';
+    end.textContent = '— End of tour —';
     container.insertBefore(end, banner);
     return;
   }
