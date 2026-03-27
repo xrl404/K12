@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
 <style>
-/* ── Tokens ──────────────────────────────────────────────── */
 :root {
   --bg:           #0c1120;
   --bg-mid:       #111827;
@@ -15,18 +14,14 @@
   --surface-2:    #1d2740;
   --border:       rgba(255,255,255,0.06);
   --border-hi:    rgba(255,255,255,0.11);
-
   --accent:       #5b8dee;
   --accent-glow:  rgba(91,141,238,0.18);
   --accent-soft:  rgba(91,141,238,0.45);
   --gold:         #f2c14e;
-  --gold-glow:    rgba(242,193,78,0.12);
-
   --text:         #dde4f0;
   --text-2:       #7f8fa8;
   --text-3:       #445066;
   --disabled:     #3a4558;
-
   --font-ui:      'Sora', system-ui, sans-serif;
   --font-display: 'Fraunces', Georgia, serif;
   --radius:       14px;
@@ -34,7 +29,6 @@
   --card-shadow:  0 0 0 1px var(--border), 0 20px 60px rgba(0,0,0,0.55);
 }
 
-/* ── Reset ───────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
@@ -53,10 +47,8 @@ body {
   line-height: 1.6;
 }
 
-/* ── App shell ───────────────────────────────────────────── */
 #app { width: 100%; max-width: 640px; }
 
-/* ── Header ──────────────────────────────────────────────── */
 #header {
   text-align: center;
   margin-bottom: 2rem;
@@ -88,7 +80,6 @@ body {
   margin-top: 0.3rem;
 }
 
-/* ── Book card ───────────────────────────────────────────── */
 #book {
   background: var(--surface);
   border-radius: var(--radius);
@@ -100,22 +91,18 @@ body {
   position: relative;
 }
 
-/* Top accent line */
 #book::before {
   content: '';
   position: absolute;
   inset: 0 0 auto 0;
   height: 2px;
   background: linear-gradient(90deg,
-    transparent 0%,
-    var(--accent-soft) 25%,
-    var(--accent) 50%,
-    var(--accent-soft) 75%,
-    transparent 100%);
+    transparent 0%, var(--accent-soft) 25%, var(--accent) 50%,
+    var(--accent-soft) 75%, transparent 100%);
   border-radius: var(--radius) var(--radius) 0 0;
 }
 
-/* ── Splash / start screen ───────────────────────────────── */
+/* ── Splash ──────────────────────────────────────────────── */
 #splash {
   padding: 3rem 2.25rem;
   display: flex;
@@ -124,12 +111,7 @@ body {
   gap: 1.5rem;
   text-align: center;
 }
-
-#splash-icon {
-  font-size: 3rem;
-  line-height: 1;
-}
-
+#splash-icon { font-size: 3rem; line-height: 1; }
 #splash-title {
   font-family: var(--font-display);
   font-size: 1.25rem;
@@ -137,13 +119,7 @@ body {
   color: var(--text);
   line-height: 1.6;
 }
-
-#splash-hint {
-  font-size: 0.8rem;
-  color: var(--text-3);
-  max-width: 320px;
-}
-
+#splash-hint { font-size: 0.8rem; color: var(--text-3); max-width: 320px; }
 #start-btn {
   background: var(--accent);
   color: #fff;
@@ -165,11 +141,9 @@ body {
 #narrator {
   padding: 2rem 2.25rem 1.75rem;
   border-bottom: 1px solid var(--border);
-  position: relative;
-  min-height: 160px;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 #narrator-label {
@@ -180,70 +154,51 @@ body {
   color: var(--accent-soft);
 }
 
-/* ── Q & A blocks ────────────────────────────────────────── */
-.qa-block {
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  flex: 1;
-}
-
-.qa-question {
-  display: flex;
-  gap: 0.65rem;
+/* ── Q row ───────────────────────────────────────────────── */
+#qa-question {
+  display: none;
   align-items: flex-start;
-}
-
-.qa-answer {
-  display: flex;
   gap: 0.65rem;
-  align-items: flex-start;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--border);
 }
+#qa-question.visible { display: flex; }
 
 .qa-label {
-  font-family: var(--font-ui);
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   flex-shrink: 0;
-  padding-top: 0.28em;
+  padding-top: 0.3em;
   min-width: 1.6rem;
 }
+.qa-label.q { color: var(--gold); }
+.qa-label.a { color: var(--accent); }
 
-.qa-label.q {
-  color: var(--gold);
-}
-
-.qa-label.a {
-  color: var(--accent);
-}
-
-.qa-text {
+#qa-question-text {
   font-family: var(--font-display);
-  font-size: 1.0rem;
+  font-size: 0.95rem;
   font-weight: 300;
-  line-height: 1.75;
-  color: var(--text);
-}
-
-.qa-text.question-text {
-  font-size: 0.97rem;
-  color: var(--text-2);
   font-style: italic;
-  font-weight: 300;
+  color: var(--text-2);
+  line-height: 1.75;
 }
 
-.qa-divider {
-  height: 1px;
-  background: var(--border);
-  margin: 0.1rem 0;
+/* ── A row ───────────────────────────────────────────────── */
+#qa-answer {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
 }
 
-/* When there's no question, just show the answer cleanly */
-.qa-answer-only .qa-text {
+#narrator-text {
+  font-family: var(--font-display);
   font-size: 1.1rem;
+  font-weight: 300;
   line-height: 1.8;
+  color: var(--text);
+  flex: 1;
 }
 
 /* ── Audio indicator ─────────────────────────────────────── */
@@ -257,15 +212,11 @@ body {
   color: var(--text-2);
   transition: opacity 0.25s;
 }
-
 #audio-indicator.hidden { opacity: 0; pointer-events: none; }
 
 .wave { display: flex; align-items: center; gap: 2px; }
-
 .wave span {
-  display: block;
-  width: 2.5px;
-  border-radius: 3px;
+  display: block; width: 2.5px; border-radius: 3px;
   background: var(--accent);
   animation: waveBounce 0.85s ease-in-out infinite;
 }
@@ -287,7 +238,6 @@ body {
   flex-direction: column;
   gap: 0.55rem;
 }
-
 #choices-label {
   font-size: 0.62rem;
   font-weight: 600;
@@ -296,7 +246,6 @@ body {
   color: var(--text-3);
   margin-bottom: 0.2rem;
 }
-
 .choice-btn {
   background: var(--surface-2);
   border: 1px solid var(--border);
@@ -315,8 +264,6 @@ body {
   position: relative;
   overflow: hidden;
 }
-
-/* Hover shimmer */
 .choice-btn::after {
   content: '';
   position: absolute;
@@ -326,37 +273,25 @@ body {
   transition: opacity 0.2s;
   pointer-events: none;
 }
-
-.choice-btn:hover:not(:disabled)::after   { opacity: 1; }
+.choice-btn:hover:not(:disabled)::after { opacity: 1; }
 .choice-btn:hover:not(:disabled) {
   border-color: var(--accent-soft);
   transform: translateY(-1px);
   box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 .choice-btn:active:not(:disabled) { transform: scale(0.99); }
-
-/* Arrow icon */
 .choice-btn::before {
   content: '›';
   font-size: 1.2rem;
   line-height: 1;
   color: var(--accent);
   flex-shrink: 0;
-  transition: transform 0.15s, color 0.15s;
+  transition: transform 0.15s;
 }
 .choice-btn:hover:not(:disabled)::before { transform: translateX(2px); }
-
-.choice-btn:disabled {
-  color: var(--disabled);
-  cursor: not-allowed;
-  background: var(--surface);
-}
-.choice-btn:disabled::before { color: var(--text-3); content: '›'; }
-
-.choice-btn.visited {
-  font-style: italic;
-  color: var(--text-2);
-}
+.choice-btn:disabled { color: var(--disabled); cursor: not-allowed; background: var(--surface); }
+.choice-btn:disabled::before { color: var(--text-3); }
+.choice-btn.visited { font-style: italic; color: var(--text-2); }
 .choice-btn.visited::before { color: var(--text-3); }
 
 /* ── Status / error ──────────────────────────────────────── */
@@ -366,7 +301,6 @@ body {
   color: var(--text-2);
   font-size: 0.95rem;
 }
-
 #status .big { font-size: 2.2rem; margin-bottom: 0.75rem; }
 #status p { font-style: italic; }
 #status code {
@@ -378,26 +312,17 @@ body {
   font-size: 0.85em;
 }
 
-/* ── Animations ──────────────────────────────────────────── */
-@keyframes rise {
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes rise { to { opacity: 1; transform: translateY(0); } }
+.fade-in { opacity: 0; animation: rise 0.3s ease forwards; }
 
-.fade-in {
-  opacity: 0;
-  animation: rise 0.3s ease forwards;
-}
-
-/* ── Scrollbar ───────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 4px; }
 
-/* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 480px) {
   body { padding: 1rem 0.75rem; }
   #narrator, #choices { padding-left: 1.5rem; padding-right: 1.5rem; }
-  .qa-text { font-size: 0.95rem; }
+  #narrator-text { font-size: 1rem; }
   #splash { padding: 2.25rem 1.5rem; }
 }
 </style>
@@ -417,7 +342,6 @@ body {
 <audio id="player"></audio>
 
 <script>
-// ─── State ────────────────────────────────────────────────
 let data         = null;
 let fileBase     = '';
 let currentNode  = null;
@@ -460,7 +384,6 @@ function resolveAudioSrc(url) {
   return url;
 }
 
-// ─── Helpers ──────────────────────────────────────────────
 function txt(str) { return document.createTextNode(String(str ?? '')); }
 
 function sanitiseAudioPath(audioPath) {
@@ -473,21 +396,6 @@ function sanitiseAudioPath(audioPath) {
 }
 
 function buildAudioUrl(audioPath) { return fileBase + audioPath; }
-
-/**
- * Parse node text into { question, answer }.
- * Format: "Question text | Answer text"
- * If no pipe separator, the whole text is treated as the answer only.
- */
-function parseQA(text) {
-  if (!text) return { question: null, answer: '' };
-  const pipeIdx = text.indexOf('|');
-  if (pipeIdx === -1) return { question: null, answer: text.trim() };
-  return {
-    question: text.slice(0, pipeIdx).trim(),
-    answer:   text.slice(pipeIdx + 1).trim()
-  };
-}
 
 // ─── Init ─────────────────────────────────────────────────
 async function init() {
@@ -542,7 +450,6 @@ async function init() {
 function showSplash(tripTitle) {
   const startNode = data.nodes[data.start_node];
   const hasAudio  = !!(startNode && startNode.audio);
-
   const book = document.getElementById('book');
   book.textContent = '';
 
@@ -566,7 +473,7 @@ function showSplash(tripTitle) {
   const btn = document.createElement('button');
   btn.id = 'start-btn';
   btn.textContent = 'Begin Trip →';
-  btn.addEventListener('click', () => { renderShell(); goTo(data.start_node, true); });
+  btn.addEventListener('click', () => { renderShell(); goTo(data.start_node, true, null); });
 
   splash.appendChild(icon);
   splash.appendChild(title);
@@ -587,11 +494,35 @@ function renderShell() {
   narratorLabel.id = 'narrator-label';
   narratorLabel.textContent = 'Narrator';
 
-  // Q&A container
-  const qaBlock = document.createElement('div');
-  qaBlock.id = 'qa-block';
-  qaBlock.className = 'qa-block';
+  // Q row — hidden until first choice is made
+  const qaQuestion = document.createElement('div');
+  qaQuestion.id = 'qa-question';
 
+  const qLabel = document.createElement('span');
+  qLabel.className = 'qa-label q';
+  qLabel.textContent = 'Q:';
+
+  const qText = document.createElement('span');
+  qText.id = 'qa-question-text';
+
+  qaQuestion.appendChild(qLabel);
+  qaQuestion.appendChild(qText);
+
+  // A row — always visible
+  const qaAnswer = document.createElement('div');
+  qaAnswer.id = 'qa-answer';
+
+  const aLabel = document.createElement('span');
+  aLabel.className = 'qa-label a';
+  aLabel.textContent = 'A:';
+
+  const narratorText = document.createElement('span');
+  narratorText.id = 'narrator-text';
+
+  qaAnswer.appendChild(aLabel);
+  qaAnswer.appendChild(narratorText);
+
+  // Audio indicator
   const audioIndicator = document.createElement('div');
   audioIndicator.id = 'audio-indicator';
   audioIndicator.className = 'hidden';
@@ -602,12 +533,12 @@ function renderShell() {
   audioIndicator.appendChild(txt('Playing…'));
 
   narrator.appendChild(narratorLabel);
-  narrator.appendChild(qaBlock);
+  narrator.appendChild(qaQuestion);
+  narrator.appendChild(qaAnswer);
   narrator.appendChild(audioIndicator);
 
   const choices = document.createElement('div');
   choices.id = 'choices';
-
   const choicesLabel = document.createElement('div');
   choicesLabel.id = 'choices-label';
   choicesLabel.textContent = 'Your response';
@@ -618,14 +549,15 @@ function renderShell() {
 }
 
 // ─── Navigation ───────────────────────────────────────────
-function goTo(nodeId, playAudio = false) {
+// choiceText = the button label the student clicked, null on first load
+function goTo(nodeId, playAudio = false, choiceText = null) {
   const node = data.nodes[nodeId];
   if (!node) { console.warn('Unknown node:', nodeId); return; }
 
   visitedNodes.add(nodeId);
   currentNode = nodeId;
 
-  renderNarrator(node);
+  renderNarrator(node, choiceText);
   renderChoices(node);
   prefetchNodeAudio(nodeId);
 
@@ -642,7 +574,8 @@ function goTo(nodeId, playAudio = false) {
 
 function choiceClicked(choice) {
   if (isPlaying) return;
-  goTo(choice.next, !choice.back);
+  // Pass the button's text as the question
+  goTo(choice.next, !choice.back, choice.text);
 }
 
 // ─── Audio ────────────────────────────────────────────────
@@ -676,79 +609,31 @@ function playAudioFile(src, canonicalUrl) {
 }
 
 // ─── Rendering ────────────────────────────────────────────
-function renderNarrator(node) {
-  const qaBlock = document.getElementById('qa-block');
-  if (!qaBlock) return;
+function renderNarrator(node, choiceText) {
+  // Q row: show if a choice was clicked, hide on the opening node
+  const qaQuestion = document.getElementById('qa-question');
+  const qText      = document.getElementById('qa-question-text');
 
-  // Animate out and back in
-  qaBlock.style.animation = 'none';
-  void qaBlock.offsetHeight;
-  qaBlock.style.animation = '';
-  qaBlock.classList.add('fade-in');
-  qaBlock.textContent = '';
-
-  const { question, answer } = parseQA(node.text);
-
-  if (question) {
-    // Question row
-    const qRow = document.createElement('div');
-    qRow.className = 'qa-question';
-
-    const qLabel = document.createElement('span');
-    qLabel.className = 'qa-label q';
-    qLabel.textContent = 'Q:';
-
-    const qText = document.createElement('span');
-    qText.className = 'qa-text question-text';
-    qText.textContent = question;
-
-    qRow.appendChild(qLabel);
-    qRow.appendChild(qText);
-
-    // Divider
-    const divider = document.createElement('div');
-    divider.className = 'qa-divider';
-
-    // Answer row
-    const aRow = document.createElement('div');
-    aRow.className = 'qa-answer';
-
-    const aLabel = document.createElement('span');
-    aLabel.className = 'qa-label a';
-    aLabel.textContent = 'A:';
-
-    const aText = document.createElement('span');
-    aText.className = 'qa-text';
-    aText.textContent = answer;
-
-    aRow.appendChild(aLabel);
-    aRow.appendChild(aText);
-
-    qaBlock.appendChild(qRow);
-    qaBlock.appendChild(divider);
-    qaBlock.appendChild(aRow);
+  if (choiceText) {
+    qText.textContent = choiceText;
+    qaQuestion.classList.add('visible');
   } else {
-    // Answer only — no question in the node text
-    const aRow = document.createElement('div');
-    aRow.className = 'qa-answer qa-answer-only';
-
-    const aLabel = document.createElement('span');
-    aLabel.className = 'qa-label a';
-    aLabel.textContent = 'A:';
-
-    const aText = document.createElement('span');
-    aText.className = 'qa-text';
-    aText.textContent = answer;
-
-    aRow.appendChild(aLabel);
-    aRow.appendChild(aText);
-    qaBlock.appendChild(aRow);
+    qText.textContent = '';
+    qaQuestion.classList.remove('visible');
   }
+
+  // A row: animate in the node's answer text
+  const narratorText = document.getElementById('narrator-text');
+  narratorText.style.animation = 'none';
+  void narratorText.offsetHeight;
+  narratorText.style.animation = '';
+  narratorText.classList.add('fade-in');
+  narratorText.textContent = node.text || '';
 }
 
 function renderChoices(node) {
   const container = document.getElementById('choices');
-  const label = document.getElementById('choices-label');
+  const label     = document.getElementById('choices-label');
   container.textContent = '';
   container.appendChild(label);
 
@@ -817,7 +702,6 @@ function showError(icon, headline, detail = '', file = '') {
   book.appendChild(status);
 }
 
-// ─── Boot ─────────────────────────────────────────────────
 init();
 </script>
 </body>
