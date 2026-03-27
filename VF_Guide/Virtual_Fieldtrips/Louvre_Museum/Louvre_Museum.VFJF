@@ -4,348 +4,235 @@
   "thank_you": "audio/thank_you.mp3",
   "nodes": {
     "entrance": {
-      "text": "Welcome to the Louvre! It's the biggest art museum in the world. What do you want to do first?",
+      "text": "Welcome to the Louvre! It’s the biggest art museum in the world. What would you like to know about the Louvre?",
       "audio": "audio/entrance.mp3",
       "choices": [
-        {
-          "text": "What is the Louvre?",
-          "next": "what_is_louvre"
-        },
-        {
-          "text": "What famous art is here?",
-          "next": "famous_art"
-        },
-        {
-          "text": "Can we go inside now?",
-          "next": "enter_museum"
-        },
-        {
-          "text": "Why is there a pyramid outside?",
-          "next": "pyramid"
-        }
+        { "text": "What is the Louvre?", "next": "what_is_louvre" },
+        { "text": "What famous art is here?", "next": "famous_art" },
+        { "text": "Why is there a pyramid outside?", "next": "pyramid" },
+        { "text": "Wasn’t there a real museum heist at the Louvre recently?", "next": "heist" },
+        { "text": "How do we visit the Louvre?", "next": "visit" }
       ]
     },
+
     "what_is_louvre": {
-      "text": "The Louvre used to be a palace where kings lived. Now it's a museum with thousands of artwork!",
+      "text": "The Louvre used to be a palace where kings lived. Now it’s a museum with thousands of artworks!",
       "audio": "audio/what_is_louvre.mp3",
       "choices": [
-        {
-          "text": "Who lived here?",
-          "next": "kings"
-        },
-        {
-          "text": "How old is it?",
-          "next": "age"
-        },
-        {
-          "text": "Why did it become a museum?",
-          "next": "museum_reason"
-        },
-        {
-          "text": "Go back",
-          "next": "entrance"
-        }
+        { "text": "Who lived here?", "next": "kings" },
+        { "text": "How old is it?", "next": "age" },
+        { "text": "Why did it become a museum?", "next": "museum_reason" },
+        { "text": "Ask another question", "next": "entrance" }
       ]
     },
+
     "kings": {
       "text": "Kings like Louis XIV lived here before moving to Versailles.",
       "audio": "audio/kings.mp3",
       "choices": [
-        {
-          "text": "Go back",
-          "next": "what_is_louvre",
-          "back": true
-        }
+        { "text": "Ask another question", "next": "entrance" }
       ]
     },
+
     "age": {
       "text": "It started as a fortress over 800 years ago!",
       "audio": "audio/age.mp3",
       "choices": [
-        {
-          "text": "Go back",
-          "next": "what_is_louvre",
-          "back": true
-        }
+        { "text": "Ask another question", "next": "entrance" }
       ]
     },
+
     "museum_reason": {
       "text": "After the French Revolution, it was turned into a place for everyone to enjoy art.",
       "audio": "audio/museum_reason.mp3",
       "choices": [
-        {
-          "text": "Go back",
-          "next": "what_is_louvre"
-        }
+        { "text": "Ask another question", "next": "entrance" }
       ]
     },
+
     "famous_art": {
       "text": "There are many famous works of art here! Do you want to hear about one?",
       "audio": "audio/famous_art.mp3",
       "choices": [
-        {
-          "text": "Tell me about the Mona Lisa",
-          "next": "mona_lisa"
-        },
-        {
-          "text": "Tell me about a statue",
-          "next": "statue"
-        },
-        {
-          "text": "Tell me about Egyptian stuff",
-          "next": "egypt"
-        },
-        {
-          "text": "Go back",
-          "next": "entrance"
-        }
+        { "text": "Tell me about the Mona Lisa", "next": "mona_lisa" },
+        { "text": "Tell me about a statue", "next": "statue" },
+        { "text": "Tell me about Egyptian stuff", "next": "egypt" },
+        { "text": "Ask another question", "next": "entrance" }
       ]
     },
+
     "mona_lisa": {
       "text": "The Mona Lisa is one of the most famous paintings in the world!",
       "audio": "audio/mona_lisa.mp3",
       "choices": [
-        {
-          "text": "Why is it famous?",
-          "next": "mona_famous"
-        },
-        {
-          "text": "Who painted it?",
-          "next": "mona_artist"
-        },
-        {
-          "text": "Why is she smiling?",
-          "next": "mona_smile"
-        },
-        {
-          "text": "Go back",
-          "next": "famous_art",
-          "back": true
-        }
+        { "text": "Why is it famous?", "next": "mona_famous" },
+        { "text": "Who painted it?", "next": "mona_artist" },
+        { "text": "Why is she smiling?", "next": "mona_smile" },
+        { "text": "Back to famous art menu", "next": "famous_art" },
+        { "text": "Ask another question", "next": "entrance" }
       ]
     },
+
     "mona_famous": {
       "text": "People love her mysterious smile and how realistic she looks.",
       "audio": "audio/mona_famous.mp3",
       "choices": [
-        {
-          "text": "Go back",
-          "next": "mona_lisa",
-          "back": true
-        }
+        { "text": "Back to famous art menu", "next": "famous_art" },
+        { "text": "Ask another question", "next": "entrance" }
       ]
     },
+
     "mona_artist": {
       "text": "It was painted by Leonardo da Vinci.",
       "audio": "audio/mona_artist.mp3",
       "choices": [
-        {
-          "text": "Go back",
-          "next": "mona_lisa",
-          "back": true
-        }
+        { "text": "Back to famous art menu", "next": "famous_art" },
+        { "text": "Ask another question", "next": "entrance" }
       ]
     },
+
     "mona_smile": {
-      "text": "No one knows for sure—that's part of the mystery!",
+      "text": "No one knows for sure—that’s part of the mystery!",
       "audio": "audio/mona_smile.mp3",
       "choices": [
-        {
-          "text": "Go back",
-          "next": "mona_lisa",
-          "back": true
-        }
+        { "text": "Back to famous art menu", "next": "famous_art" },
+        { "text": "Ask another question", "next": "entrance" }
       ]
     },
+
     "statue": {
       "text": "One famous statue is the Venus de Milo.",
       "audio": "audio/statue.mp3",
       "choices": [
-        {
-          "text": "Why doesn't it have arms?",
-          "next": "statue_arms"
-        },
-        {
-          "text": "How old is it?",
-          "next": "statue_age"
-        },
-        {
-          "text": "Go back",
-          "next": "famous_art",
-          "back": true
-        }
+        { "text": "Why doesn’t it have arms?", "next": "statue_arms" },
+        { "text": "How old is it?", "next": "statue_age" },
+        { "text": "Back to famous art menu", "next": "famous_art" },
+        { "text": "Ask another question", "next": "entrance" }
       ]
     },
+
     "statue_arms": {
       "text": "They were lost a long time ago, and no one knows exactly how.",
       "audio": "audio/statue_arms.mp3",
       "choices": [
-        {
-          "text": "Go back",
-          "next": "statue",
-          "back": true
-        }
+        { "text": "Back to famous art menu", "next": "famous_art" },
+        { "text": "Ask another question", "next": "entrance" }
       ]
     },
+
     "statue_age": {
-      "text": "It's over 2,000 years old!",
+      "text": "It’s over 2,000 years old!",
       "audio": "audio/statue_age.mp3",
       "choices": [
-        {
-          "text": "Go back",
-          "next": "statue",
-          "back": true
-        }
+        { "text": "Back to famous art menu", "next": "famous_art" },
+        { "text": "Ask another question", "next": "entrance" }
       ]
     },
+
     "egypt": {
       "text": "The museum has ancient Egyptian artifacts like mummies!",
       "audio": "audio/egypt.mp3",
       "choices": [
-        {
-          "text": "What is a mummy?",
-          "next": "mummy"
-        },
-        {
-          "text": "Why did Egyptians make them?",
-          "next": "afterlife"
-        },
-        {
-          "text": "Go back",
-          "next": "famous_art",
-          "back": true
-        }
+        { "text": "What is a mummy?", "next": "mummy" },
+        { "text": "Why did Egyptians make them?", "next": "afterlife" },
+        { "text": "Back to famous art menu", "next": "famous_art" },
+        { "text": "Ask another question", "next": "entrance" }
       ]
     },
+
     "mummy": {
       "text": "A mummy is a preserved body from ancient times.",
       "audio": "audio/mummy.mp3",
       "choices": [
-        {
-          "text": "Go back",
-          "next": "egypt",
-          "back": true
-        }
+        { "text": "Back to famous art menu", "next": "famous_art" },
+        { "text": "Ask another question", "next": "entrance" }
       ]
     },
+
     "afterlife": {
       "text": "They believed it helped people live in the afterlife.",
       "audio": "audio/afterlife.mp3",
       "choices": [
-        {
-          "text": "Go back",
-          "next": "egypt",
-          "back": true
-        }
+        { "text": "Back to famous art menu", "next": "famous_art" },
+        { "text": "Ask another question", "next": "entrance" }
       ]
     },
-    "enter_museum": {
-      "text": "Of course! What do you want to explore?",
-      "audio": "audio/enter_museum.mp3",
-      "choices": [
-        {
-          "text": "Paintings",
-          "next": "paintings_room"
-        },
-        {
-          "text": "Statues",
-          "next": "statues_room"
-        },
-        {
-          "text": "Ancient history",
-          "next": "ancient_room"
-        },
-        {
-          "text": "Go back",
-          "next": "entrance",
-          "back": true
-        }
-      ]
-    },
-    "paintings_room": {
-      "text": "You enter a room full of paintings. You see the Mona Lisa!",
-      "audio": "audio/paintings_room.mp3",
-      "choices": [
-        {
-          "text": "Walk closer",
-          "next": "mona_lisa"
-        },
-        {
-          "text": "Go back",
-          "next": "enter_museum",
-          "back": true
-        }
-      ]
-    },
-    "statues_room": {
-      "text": "You see many statues, including the Venus de Milo.",
-      "audio": "audio/statues_room.mp3",
-      "choices": [
-        {
-          "text": "Learn more",
-          "next": "statue"
-        },
-        {
-          "text": "Go back",
-          "next": "enter_museum",
-          "back": true
-        }
-      ]
-    },
-    "ancient_room": {
-      "text": "You find ancient artifacts from Egypt.",
-      "audio": "audio/ancient_room.mp3",
-      "choices": [
-        {
-          "text": "Learn about mummies",
-          "next": "egypt"
-        },
-        {
-          "text": "Go back",
-          "next": "enter_museum",
-          "back": true
-        }
-      ]
-    },
+
     "pyramid": {
       "text": "The glass pyramid was added in 1989 as a modern entrance.",
       "audio": "audio/pyramid.mp3",
       "choices": [
-        {
-          "text": "Why glass?",
-          "next": "glass"
-        },
-        {
-          "text": "Do people like it?",
-          "next": "opinion"
-        },
-        {
-          "text": "Go back",
-          "next": "entrance",
-          "back": true
-        }
+        { "text": "Why glass?", "next": "glass" },
+        { "text": "Do people like it?", "next": "opinion" },
+        { "text": "Ask another question", "next": "entrance" }
       ]
     },
+
     "glass": {
       "text": "So people can see the old building around it.",
       "audio": "audio/glass.mp3",
       "choices": [
-        {
-          "text": "Go back",
-          "next": "pyramid",
-          "back": true
-        }
+        { "text": "Ask another question", "next": "entrance" }
       ]
     },
+
     "opinion": {
-      "text": "Some people love it, some didn't at first—but now it's very famous!",
+      "text": "Some people love it, some didn’t at first—but now it’s very famous!",
       "audio": "audio/opinion.mp3",
       "choices": [
-        {
-          "text": "Go back",
-          "next": "pyramid",
-          "back": true
-        }
+        { "text": "Ask another question", "next": "entrance" }
+      ]
+    },
+
+    "heist": {
+      "text": "Yes! Thieves pulled off a bold robbery in October 2025 right in the middle of the day.",
+      "audio": "audio/heist.mp3",
+      "choices": [
+        { "text": "How did the thieves break in in the middle of the day?", "next": "heist_entry" },
+        { "text": "How long did it take?", "next": "heist_time" },
+        { "text": "What did they steal?", "next": "heist_items" },
+        { "text": "Were they ever caught?", "next": "heist_caught" },
+        { "text": "Ask another question", "next": "entrance" }
+      ]
+    },
+
+    "heist_entry": {
+      "text": "They snuck in through a window and dressed like construction workers to blend in.",
+      "audio": "audio/heist_entry.mp3",
+      "choices": [
+        { "text": "Ask another question", "next": "entrance" }
+      ]
+    },
+
+    "heist_time": {
+      "text": "The whole heist took under 10 minutes.",
+      "audio": "audio/heist_time.mp3",
+      "choices": [
+        { "text": "Ask another question", "next": "entrance" }
+      ]
+    },
+
+    "heist_items": {
+      "text": "They stole valuable French Crown Jewels.",
+      "audio": "audio/heist_items.mp3",
+      "choices": [
+        { "text": "Ask another question", "next": "entrance" }
+      ]
+    },
+
+    "heist_caught": {
+      "text": "Several suspects were later arrested, but many jewels are still missing!",
+      "audio": "audio/heist_caught.mp3",
+      "choices": [
+        { "text": "Ask another question", "next": "entrance" }
+      ]
+    },
+
+    "visit": {
+      "text": "The Louvre is in Paris, France. It is very far away. But you can click on the glass pyramid here for a virtual tour.",
+      "audio": "audio/visit.mp3",
+      "choices": [
+        { "text": "Ask another question", "next": "entrance" }
       ]
     }
   }
