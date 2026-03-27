@@ -370,6 +370,53 @@ let isPlaying    = false;
 let visitedNodes = new Set();
 const player     = document.getElementById('player');
 
+// ─── Helpers ──────────────────────────────────────────────
+
+/**
+ * Escape a string for safe insertion into HTML text content.
+ * Returns a DocumentFragment-safe text node when used with DOM APIs,
+ * but we expose this for the rare places that still build HTML strings
+ * (the static error screen, which uses only literal safe strings now).
+ */
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
+/**
+ * Create a text node — the safest way to put user data into the DOM
+ * without any risk of it being interpreted as HTML.
+ */
+function txt(str) {
+  return document.createTextNode(String(str ?? ''));
+}
+
+/**
+ * Validate that an audio path is a relative path (not a javascript: URI
+ * or an absolute URL to an untrusted origin).
+ * Returns the sanitised URL string, or null if the path is rejected.
+ */
+function sanitiseAudioPath(audioPath) {
+  if (typeof audioPath !== 'string' || audioPath.trim() === '') return null;
+  // Reject anything with a scheme (javascript:, data:, https://, etc.)
+  // A relative path must NOT contain ":" before the first "/"
+  const colonIdx = audioPath.indexOf(':');
+  const slashIdx = audioPath.indexOf('/');
+  if (colonIdx !== -1 && (slashIdx === -1 || colonIdx < slashIdx)) return null;
+  // Reject attempts to escape the virtual directory
+  if (audioPath.includes('..')) return null;
+  return audioPath;
+}
+
+function buildAudioUrl(audioPath) {
+  // fileBase always starts with '/' and ends with '/'
+  return fileBase + audioPath;
+}
+
 // ─── Init ─────────────────────────────────────────────────
 async function init() {
   const params   = new URLSearchParams(location.search);
@@ -379,7 +426,8 @@ async function init() {
     showError(
       '⚠️',
       'No file specified.',
-      'Add <code>?file=Virtual_Fieldtrips/TripName/TripName.VFJF</code> to the URL.'
+      // FIX: safe literal string — no user data interpolated
+      'Add ?file=Virtual_Fieldtrips/TripName/TripName.VFJF to the URL.'
     );
     return;
   }
@@ -394,22 +442,32 @@ async function init() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     data = await res.json();
   } catch (e) {
-    showError('⚠️', `Could not load <em>${filePath}</em>.`, e.message);
+    // FIX: e.message and filePath are displayed via DOM text nodes in showError,
+    // not interpolated into an innerHTML string.
+    showError('⚠️', 'Could not load trip file.', e.message, filePath);
     return;
   }
 
   // Validate minimal structure
   if (!data.nodes || !data.start_node || !data.nodes[data.start_node]) {
-    showError('⚠️', 'Invalid trip file.', 'Missing <code>nodes</code> or <code>start_node</code>.');
+    showError('⚠️', 'Invalid trip file.', 'Missing nodes or start_node.');
     return;
   }
 
-  // Update page title
-  const tripTitle = (data.root || 'Virtual Field Trip').trim();
+  // FIX: set document.title via property (automatically text-safe)
+  const tripTitle = String(data.root || 'Virtual Field Trip').trim();
   document.title  = tripTitle;
+
+  // FIX: build the <h1> content with DOM nodes, not innerHTML
+  const h1 = document.getElementById('title-text');
+  h1.textContent = ''; // clear existing content
   const words = tripTitle.split(' ');
-  document.getElementById('title-text').innerHTML =
-    words.slice(0, -1).join(' ') + ' <em>' + words[words.length - 1] + '</em>';
+  if (words.length > 1) {
+    h1.appendChild(txt(words.slice(0, -1).join(' ') + ' '));
+  }
+  const em = document.createElement('em');
+  em.appendChild(txt(words[words.length - 1]));
+  h1.appendChild(em);
 
   showSplash(tripTitle);
 }
@@ -419,41 +477,88 @@ function showSplash(tripTitle) {
   const startNode = data.nodes[data.start_node];
   const hasAudio  = !!(startNode && startNode.audio);
 
-  document.getElementById('book').innerHTML = `
-    <div id="splash">
-      <div id="splash-icon">🌍</div>
-      <div id="splash-title">${escHtml(tripTitle)}</div>
-      <p id="splash-hint">${hasAudio
-        ? 'Audio narration is included. Make sure your sound is on.'
-        : 'Use the choices below to explore each stop on the trip.'
-      }</p>
-      <button id="start-btn">Begin Trip →</button>
-    </div>
-  `;
+  // FIX: build the splash screen with DOM APIs instead of innerHTML,
+  // so tripTitle (and any other data-derived content) is always treated
+  // as plain text, never as markup.
+  const book = document.getElementById('book');
+  book.textContent = ''; // clear
 
-  document.getElementById('start-btn').addEventListener('click', () => {
+  const splash = document.createElement('div');
+  splash.id = 'splash';
+
+  const icon = document.createElement('div');
+  icon.id = 'splash-icon';
+  icon.textContent = '🌍';
+
+  const title = document.createElement('div');
+  title.id = 'splash-title';
+  title.appendChild(txt(tripTitle)); // safe text node
+
+  const hint = document.createElement('p');
+  hint.id = 'splash-hint';
+  hint.textContent = hasAudio
+    ? 'Audio narration is included. Make sure your sound is on.'
+    : 'Use the choices below to explore each stop on the trip.';
+
+  const btn = document.createElement('button');
+  btn.id = 'start-btn';
+  btn.textContent = 'Begin Trip →';
+  btn.addEventListener('click', () => {
     renderShell();
     goTo(data.start_node, /* playAudio */ true);
   });
+
+  splash.appendChild(icon);
+  splash.appendChild(title);
+  splash.appendChild(hint);
+  splash.appendChild(btn);
+  book.appendChild(splash);
 }
 
 // ─── Shell (narrator + choices region) ───────────────────
 function renderShell() {
-  document.getElementById('book').innerHTML = `
-    <div id="narrator">
-      <div id="narrator-label">Narrator</div>
-      <div id="narrator-text"></div>
-      <div id="audio-indicator" class="hidden">
-        <div class="wave">
-          <span></span><span></span><span></span><span></span><span></span>
-        </div>
-        Playing…
-      </div>
-    </div>
-    <div id="choices">
-      <div id="choices-label">Your response</div>
-    </div>
-  `;
+  // FIX: all content here is static/trusted, but we use DOM construction
+  // consistently to prevent future regressions if dynamic data is added.
+  const book = document.getElementById('book');
+  book.textContent = '';
+
+  const narrator = document.createElement('div');
+  narrator.id = 'narrator';
+
+  const narratorLabel = document.createElement('div');
+  narratorLabel.id = 'narrator-label';
+  narratorLabel.textContent = 'Narrator';
+
+  const narratorText = document.createElement('div');
+  narratorText.id = 'narrator-text';
+
+  const audioIndicator = document.createElement('div');
+  audioIndicator.id = 'audio-indicator';
+  audioIndicator.className = 'hidden';
+
+  const wave = document.createElement('div');
+  wave.className = 'wave';
+  for (let i = 0; i < 5; i++) {
+    wave.appendChild(document.createElement('span'));
+  }
+  audioIndicator.appendChild(wave);
+  audioIndicator.appendChild(txt('Playing…'));
+
+  narrator.appendChild(narratorLabel);
+  narrator.appendChild(narratorText);
+  narrator.appendChild(audioIndicator);
+
+  const choices = document.createElement('div');
+  choices.id = 'choices';
+
+  const choicesLabel = document.createElement('div');
+  choicesLabel.id = 'choices-label';
+  choicesLabel.textContent = 'Your response';
+
+  choices.appendChild(choicesLabel);
+
+  book.appendChild(narrator);
+  book.appendChild(choices);
 }
 
 // ─── Navigation ───────────────────────────────────────────
@@ -468,13 +573,17 @@ function goTo(nodeId, playAudio = false) {
   renderChoices(node);
 
   if (playAudio && node.audio) {
-    playAudioFile(buildAudioUrl(node.audio));
+    const safePath = sanitiseAudioPath(node.audio);
+    if (safePath) {
+      playAudioFile(buildAudioUrl(safePath));
+    } else {
+      console.warn('Rejected unsafe audio path:', node.audio);
+    }
   }
 }
 
 function choiceClicked(choice) {
   if (isPlaying) return;
-  // choice.back is a legacy flag; regardless, always go to choice.next
   goTo(choice.next, /* playAudio */ !choice.back);
 }
 
@@ -501,7 +610,6 @@ function playAudioFile(src) {
   };
 
   player.play().catch((e) => {
-    // play() promise rejection (e.g. file missing) — just unlock
     console.warn('play() rejected:', e);
     done();
   });
@@ -515,6 +623,7 @@ function renderNarrator(node) {
   void el.offsetHeight;
   el.style.animation = '';
   el.classList.add('fade-in');
+  // FIX: was already using textContent (safe) — kept as-is
   el.textContent = node.text || '';
 }
 
@@ -523,7 +632,7 @@ function renderChoices(node) {
 
   // Keep the label, remove old buttons
   const label = document.getElementById('choices-label');
-  container.innerHTML = '';
+  container.textContent = ''; // FIX: was innerHTML = '' (safe here, but textContent is clearer)
   container.appendChild(label);
 
   const choices = node.choices || [];
@@ -539,6 +648,7 @@ function renderChoices(node) {
     const btn = document.createElement('button');
     btn.className = 'choice-btn fade-in';
     if (visitedNodes.has(choice.next)) btn.classList.add('visited');
+    // FIX: was already using textContent (safe) — kept as-is
     btn.textContent = choice.text;
     btn.addEventListener('click', () => choiceClicked(choice));
     container.appendChild(btn);
@@ -557,28 +667,51 @@ function setWave(visible) {
 }
 
 // ─── Error screen ─────────────────────────────────────────
-function showError(icon, headline, detail = '') {
-  document.getElementById('book').innerHTML = `
-    <div id="status">
-      <div class="big">${icon}</div>
-      <p>${headline}</p>
-      ${detail ? `<p style="margin-top:0.5rem;font-size:0.85rem;">${detail}</p>` : ''}
-    </div>
-  `;
-}
+/**
+ * FIX: was using innerHTML with potentially user-controlled strings
+ * (e.message, filePath). Now builds the error UI with DOM nodes so
+ * every string is treated as plain text, never markup.
+ *
+ * @param {string} icon      - Emoji / safe literal
+ * @param {string} headline  - Short description (may be user-derived)
+ * @param {string} [detail]  - Technical detail, e.g. e.message
+ * @param {string} [file]    - The file path that failed to load
+ */
+function showError(icon, headline, detail = '', file = '') {
+  const book = document.getElementById('book');
+  book.textContent = '';
 
-// ─── Helpers ──────────────────────────────────────────────
-function buildAudioUrl(audioPath) {
-  // fileBase always starts with '/' and ends with '/'
-  return fileBase + audioPath;
-}
+  const status = document.createElement('div');
+  status.id = 'status';
 
-function escHtml(str) {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  const big = document.createElement('div');
+  big.className = 'big';
+  big.textContent = icon;
+
+  const p1 = document.createElement('p');
+  p1.appendChild(txt(headline));
+
+  status.appendChild(big);
+  status.appendChild(p1);
+
+  if (file) {
+    const pFile = document.createElement('p');
+    pFile.style.cssText = 'margin-top:0.5rem;font-size:0.85rem;';
+    pFile.appendChild(txt('File: '));
+    const code = document.createElement('code');
+    code.appendChild(txt(file)); // safe text node — no innerHTML
+    pFile.appendChild(code);
+    status.appendChild(pFile);
+  }
+
+  if (detail) {
+    const p2 = document.createElement('p');
+    p2.style.cssText = 'margin-top:0.35rem;font-size:0.85rem;';
+    p2.appendChild(txt(detail)); // safe text node — no innerHTML
+    status.appendChild(p2);
+  }
+
+  book.appendChild(status);
 }
 
 // ─── Boot ─────────────────────────────────────────────────
