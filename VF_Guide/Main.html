@@ -192,6 +192,18 @@ body {
   gap: 0.65rem;
 }
 
+#a-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  padding-top: 0.3em;
+  min-width: 1.6rem;
+  color: var(--accent);
+  visibility: hidden; /* hidden on start node, shown after first choice */
+}
+
 #narrator-text {
   font-family: var(--font-display);
   font-size: 1.1rem;
@@ -508,12 +520,12 @@ function renderShell() {
   qaQuestion.appendChild(qLabel);
   qaQuestion.appendChild(qText);
 
-  // A row — always visible
+  // A row — always visible, but A: label hidden on start node
   const qaAnswer = document.createElement('div');
   qaAnswer.id = 'qa-answer';
 
   const aLabel = document.createElement('span');
-  aLabel.className = 'qa-label a';
+  aLabel.id = 'a-label';
   aLabel.textContent = 'A:';
 
   const narratorText = document.createElement('span');
@@ -613,13 +625,16 @@ function renderNarrator(node, choiceText) {
   // Q row: show if a choice was clicked, hide on the opening node
   const qaQuestion = document.getElementById('qa-question');
   const qText      = document.getElementById('qa-question-text');
+  const aLabel     = document.getElementById('a-label');
 
   if (choiceText) {
     qText.textContent = choiceText;
     qaQuestion.classList.add('visible');
+    aLabel.style.visibility = 'visible'; // show A: label once a choice has been made
   } else {
     qText.textContent = '';
     qaQuestion.classList.remove('visible');
+    aLabel.style.visibility = 'hidden'; // hide A: label on the start node
   }
 
   // A row: animate in the node's answer text
