@@ -115,6 +115,52 @@ body {
   border-radius: var(--radius) var(--radius) 0 0;
 }
 
+/* ── Splash / start screen ───────────────────────────────── */
+#splash {
+  padding: 3rem 2.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+#splash-icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+#splash-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 300;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+#splash-hint {
+  font-size: 0.8rem;
+  color: var(--text-3);
+  max-width: 320px;
+}
+
+#start-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 2.5rem;
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
+  box-shadow: 0 4px 20px rgba(91,141,238,0.35);
+}
+#start-btn:hover  { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(91,141,238,0.45); }
+#start-btn:active { transform: scale(0.98); }
+
 /* ── Narrator box ────────────────────────────────────────── */
 #narrator {
   padding: 2rem 2.25rem 1.75rem;
@@ -262,10 +308,11 @@ body {
   text-align: center;
   color: var(--text-2);
   font-size: 0.95rem;
-  font-style: italic;
 }
 
 #status .big { font-size: 2.2rem; margin-bottom: 0.75rem; }
+
+#status p { font-style: italic; }
 
 #status code {
   background: var(--surface-2);
@@ -296,6 +343,7 @@ body {
   body { padding: 1rem 0.75rem; }
   #narrator, #choices { padding-left: 1.5rem; padding-right: 1.5rem; }
   #narrator-text { font-size: 1rem; }
+  #splash { padding: 2.25rem 1.5rem; }
 }
 </style>
 </head>
@@ -307,7 +355,7 @@ body {
     <div class="subtitle" id="subtitle-text">K12 Guide</div>
   </div>
   <div id="book">
-    <div id="status"><div class="big">📖</div>Loading…</div>
+    <div id="status"><div class="big">📖</div><p>Loading…</p></div>
   </div>
 </div>
 
@@ -329,96 +377,68 @@ async function init() {
 
   if (!filePath) {
     showError(
-      'No file specified.<br>' +
-      '<small>Add <code>?file=Virtual_Feildtrips/TripName/TripName.VFJF</code> to the URL.</small>'
+      '⚠️',
+      'No file specified.',
+      'Add <code>?file=Virtual_Fieldtrips/TripName/TripName.VFJF</code> to the URL.'
     );
     return;
   }
 
+  // Derive the directory that audio paths will be relative to
   const slashIdx = filePath.lastIndexOf('/');
-  const relDir   = slashIdx >= 0 ? filePath.substring(0, slashIdx + 1) : '';
-  fileBase = resolveFromPageRoot(relDir);
+  const relDir   = slashIdx >= 0 ? filePath.slice(0, slashIdx + 1) : '';
+  fileBase       = '/' + relDir;
 
-  const fetchUrl = resolveFromPageRoot(filePath);
   try {
-    const res = await fetch(fetchUrl);
-    if (!res.ok) throw new Error(`HTTP ${res.status} — ${fetchUrl}`);
+    const res = await fetch('/' + filePath);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     data = await res.json();
   } catch (e) {
-    showError(`Could not load <em>${filePath}</em>.<br><small>${e.message}</small>`);
+    showError('⚠️', `Could not load <em>${filePath}</em>.`, e.message);
     return;
   }
 
-  const title = data.root || 'Virtual Field Trip';
-  document.title = title;
-  // Wrap last word in italic accent span
-  const words = title.split(' ');
+  // Validate minimal structure
+  if (!data.nodes || !data.start_node || !data.nodes[data.start_node]) {
+    showError('⚠️', 'Invalid trip file.', 'Missing <code>nodes</code> or <code>start_node</code>.');
+    return;
+  }
+
+  // Update page title
+  const tripTitle = (data.root || 'Virtual Field Trip').trim();
+  document.title  = tripTitle;
+  const words = tripTitle.split(' ');
   document.getElementById('title-text').innerHTML =
     words.slice(0, -1).join(' ') + ' <em>' + words[words.length - 1] + '</em>';
 
-  renderBook();
-  goTo(data.start_node);
+  showSplash(tripTitle);
+}
+
+// ─── Splash (satisfies browser autoplay policy) ───────────
+function showSplash(tripTitle) {
   const startNode = data.nodes[data.start_node];
-  if (startNode && startNode.audio) {
-    playAudioFile(buildAudioUrl(startNode.audio));
-  }
+  const hasAudio  = !!(startNode && startNode.audio);
+
+  document.getElementById('book').innerHTML = `
+    <div id="splash">
+      <div id="splash-icon">🌍</div>
+      <div id="splash-title">${escHtml(tripTitle)}</div>
+      <p id="splash-hint">${hasAudio
+        ? 'Audio narration is included. Make sure your sound is on.'
+        : 'Use the choices below to explore each stop on the trip.'
+      }</p>
+      <button id="start-btn">Begin Trip →</button>
+    </div>
+  `;
+
+  document.getElementById('start-btn').addEventListener('click', () => {
+    renderShell();
+    goTo(data.start_node, /* playAudio */ true);
+  });
 }
 
-// ─── Path helpers ─────────────────────────────────────────
-function resolveFromPageRoot(relativePath) {
-  const url = new URL('/' + relativePath, location.origin);
-  return url.pathname;
-}
-
-function buildAudioUrl(audioPath) {
-  const url = new URL(fileBase + audioPath, location.origin);
-  return url.href;
-}
-
-// ─── Navigation ───────────────────────────────────────────
-function goTo(nodeId) {
-  const node = data.nodes[nodeId];
-  if (!node) { console.warn('Unknown node:', nodeId); return; }
-  visitedNodes.add(nodeId);
-  currentNode = nodeId;
-  renderNarrator(node);
-  renderChoices(node);
-}
-
-function choiceClicked(choice) {
-  if (isPlaying) return;
-  if (choice.back) {
-    goTo(choice.next);
-  } else {
-    goTo(choice.next);
-    const node = data.nodes[choice.next];
-    if (node && node.audio) {
-      playAudioFile(buildAudioUrl(node.audio));
-    }
-  }
-}
-
-// ─── Audio ────────────────────────────────────────────────
-function playAudioFile(src, onEnd) {
-  player.pause();
-  player.src = src;
-  isPlaying = true;
-  showWave(true);
-  lockChoices(true);
-  player.play().catch(() => finishAudio(onEnd));
-  player.onended = () => finishAudio(onEnd);
-  player.onerror = () => finishAudio(onEnd);
-}
-
-function finishAudio(onEnd) {
-  isPlaying = false;
-  showWave(false);
-  lockChoices(false);
-  if (onEnd) onEnd();
-}
-
-// ─── Rendering ────────────────────────────────────────────
-function renderBook() {
+// ─── Shell (narrator + choices region) ───────────────────
+function renderShell() {
   document.getElementById('book').innerHTML = `
     <div id="narrator">
       <div id="narrator-label">Narrator</div>
@@ -436,8 +456,61 @@ function renderBook() {
   `;
 }
 
+// ─── Navigation ───────────────────────────────────────────
+function goTo(nodeId, playAudio = false) {
+  const node = data.nodes[nodeId];
+  if (!node) { console.warn('Unknown node:', nodeId); return; }
+
+  visitedNodes.add(nodeId);
+  currentNode = nodeId;
+
+  renderNarrator(node);
+  renderChoices(node);
+
+  if (playAudio && node.audio) {
+    playAudioFile(buildAudioUrl(node.audio));
+  }
+}
+
+function choiceClicked(choice) {
+  if (isPlaying) return;
+  // choice.back is a legacy flag; regardless, always go to choice.next
+  goTo(choice.next, /* playAudio */ !choice.back);
+}
+
+// ─── Audio ────────────────────────────────────────────────
+function playAudioFile(src) {
+  player.pause();
+  player.src = src;
+  isPlaying  = true;
+  setWave(true);
+  lockChoices(true);
+
+  const done = () => {
+    isPlaying = false;
+    setWave(false);
+    lockChoices(false);
+    player.onended = null;
+    player.onerror = null;
+  };
+
+  player.onended = done;
+  player.onerror = (e) => {
+    console.warn('Audio error:', src, e);
+    done();
+  };
+
+  player.play().catch((e) => {
+    // play() promise rejection (e.g. file missing) — just unlock
+    console.warn('play() rejected:', e);
+    done();
+  });
+}
+
+// ─── Rendering ────────────────────────────────────────────
 function renderNarrator(node) {
   const el = document.getElementById('narrator-text');
+  // Restart animation
   el.style.animation = 'none';
   void el.offsetHeight;
   el.style.animation = '';
@@ -447,11 +520,22 @@ function renderNarrator(node) {
 
 function renderChoices(node) {
   const container = document.getElementById('choices');
-  const label     = document.getElementById('choices-label');
+
+  // Keep the label, remove old buttons
+  const label = document.getElementById('choices-label');
   container.innerHTML = '';
   container.appendChild(label);
 
-  (node.choices || []).forEach(choice => {
+  const choices = node.choices || [];
+  if (choices.length === 0) {
+    const end = document.createElement('p');
+    end.style.cssText = 'color:var(--text-3);font-size:0.85rem;font-style:italic;margin-top:0.5rem;';
+    end.textContent = '— End of trip —';
+    container.appendChild(end);
+    return;
+  }
+
+  choices.forEach(choice => {
     const btn = document.createElement('button');
     btn.className = 'choice-btn fade-in';
     if (visitedNodes.has(choice.next)) btn.classList.add('visited');
@@ -462,20 +546,42 @@ function renderChoices(node) {
 }
 
 function lockChoices(locked) {
-  document.querySelectorAll('.choice-btn').forEach(btn => btn.disabled = locked);
+  document.querySelectorAll('.choice-btn').forEach(btn => {
+    btn.disabled = locked;
+  });
 }
 
-function showWave(visible) {
+function setWave(visible) {
   const el = document.getElementById('audio-indicator');
   if (el) el.classList.toggle('hidden', !visible);
 }
 
-function showError(html) {
-  document.getElementById('book').innerHTML =
-    `<div id="status"><div class="big">⚠️</div>${html}</div>`;
+// ─── Error screen ─────────────────────────────────────────
+function showError(icon, headline, detail = '') {
+  document.getElementById('book').innerHTML = `
+    <div id="status">
+      <div class="big">${icon}</div>
+      <p>${headline}</p>
+      ${detail ? `<p style="margin-top:0.5rem;font-size:0.85rem;">${detail}</p>` : ''}
+    </div>
+  `;
 }
 
-// ─── Go ───────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────
+function buildAudioUrl(audioPath) {
+  // fileBase always starts with '/' and ends with '/'
+  return fileBase + audioPath;
+}
+
+function escHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ─── Boot ─────────────────────────────────────────────────
 init();
 </script>
 </body>
