@@ -1,6 +1,7 @@
 {
   "root": "Louvre Museum",
   "start_node": "entrance",
+  "thank_you": "audio/thank_you.mp3",
   "nodes": {
     "entrance": {
       "text": "Welcome to the Louvre! It's the biggest art museum in the world. What do you want to do first?",
