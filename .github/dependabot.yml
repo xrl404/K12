@@ -1,0 +1,6 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/server"   # this is for the future and will likely throw an error at the moment but if im going to be coding anything involving a server i want to make sure its secure
+    schedule:
+      interval: "daily"
