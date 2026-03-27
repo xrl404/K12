@@ -18,6 +18,9 @@
   --accent-glow:  rgba(91,141,238,0.18);
   --accent-soft:  rgba(91,141,238,0.45);
   --gold:         #f2c14e;
+  --gold-soft:    rgba(242,193,78,0.15);
+  --green:        #4ade80;
+  --green-soft:   rgba(74,222,128,0.15);
   --text:         #dde4f0;
   --text-2:       #7f8fa8;
   --text-3:       #445066;
@@ -49,17 +52,23 @@ body {
 
 #app { width: 100%; max-width: 640px; }
 
+/* ── Header ──────────────────────────────────────────────── */
 #header {
-  text-align: center;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
   margin-bottom: 2rem;
   opacity: 0;
   transform: translateY(-10px);
   animation: rise 0.55s 0.08s ease forwards;
 }
 
+#header-text { text-align: left; flex: 1; }
+
 #header h1 {
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  font-size: clamp(1.3rem, 4vw, 2.1rem);
   font-weight: 600;
   color: var(--text);
   letter-spacing: -0.01em;
@@ -80,6 +89,56 @@ body {
   margin-top: 0.3rem;
 }
 
+/* ── Progress widget (top-right) ─────────────────────────── */
+#progress-widget {
+  display: none;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  flex-shrink: 0;
+  min-width: 110px;
+}
+
+#progress-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+#progress-bar-track {
+  width: 100%;
+  height: 6px;
+  background: var(--surface-2);
+  border-radius: 99px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+#progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--accent) 0%, #8ab4f8 100%);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease;
+}
+
+#progress-bar-fill.complete {
+  background: linear-gradient(90deg, var(--green) 0%, #86efac 100%);
+}
+
+#progress-pct {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-2);
+  letter-spacing: 0.04em;
+  transition: color 0.4s;
+}
+
+#progress-pct.complete { color: var(--green); }
+
+/* ── Book card ───────────────────────────────────────────── */
 #book {
   background: var(--surface);
   border-radius: var(--radius);
@@ -100,6 +159,13 @@ body {
     transparent 0%, var(--accent-soft) 25%, var(--accent) 50%,
     var(--accent-soft) 75%, transparent 100%);
   border-radius: var(--radius) var(--radius) 0 0;
+  transition: background 0.6s ease;
+}
+
+#book.complete::before {
+  background: linear-gradient(90deg,
+    transparent 0%, rgba(74,222,128,0.45) 25%, var(--green) 50%,
+    rgba(74,222,128,0.45) 75%, transparent 100%);
 }
 
 /* ── Splash ──────────────────────────────────────────────── */
@@ -201,7 +267,7 @@ body {
   padding-top: 0.3em;
   min-width: 1.6rem;
   color: var(--accent);
-  visibility: hidden; /* hidden on start node, shown after first choice */
+  visibility: hidden;
 }
 
 #narrator-text {
@@ -258,6 +324,8 @@ body {
   color: var(--text-3);
   margin-bottom: 0.2rem;
 }
+
+/* ── Choice buttons (base) ───────────────────────────────── */
 .choice-btn {
   background: var(--surface-2);
   border: 1px solid var(--border);
@@ -303,8 +371,62 @@ body {
 .choice-btn:hover:not(:disabled)::before { transform: translateX(2px); }
 .choice-btn:disabled { color: var(--disabled); cursor: not-allowed; background: var(--surface); }
 .choice-btn:disabled::before { color: var(--text-3); }
-.choice-btn.visited { font-style: italic; color: var(--text-2); }
-.choice-btn.visited::before { color: var(--text-3); }
+
+/* visited forward choices — gold tint + checkmark */
+.choice-btn.visited {
+  background: var(--gold-soft);
+  border-color: rgba(242,193,78,0.2);
+  color: var(--text-2);
+}
+.choice-btn.visited::before {
+  content: '✓';
+  font-size: 0.85rem;
+  color: var(--gold);
+}
+.choice-btn.visited:hover:not(:disabled) {
+  border-color: rgba(242,193,78,0.45);
+}
+.choice-btn.visited::after {
+  background: linear-gradient(110deg, transparent 0%, var(--gold-soft) 100%);
+}
+
+/* back buttons — muted style, no visited treatment */
+.choice-btn.back-btn {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-3);
+  font-size: 0.83rem;
+}
+.choice-btn.back-btn::before {
+  content: '‹';
+  color: var(--text-3);
+}
+.choice-btn.back-btn:hover:not(:disabled) {
+  color: var(--text-2);
+  border-color: var(--border-hi);
+  transform: translateY(-1px);
+}
+.choice-btn.back-btn:hover:not(:disabled)::before {
+  transform: translateX(-2px);
+  color: var(--text-2);
+}
+.choice-btn.back-btn::after { display: none; }
+
+/* ── Completion banner ───────────────────────────────────── */
+#complete-banner {
+  display: none;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.85rem 1.1rem;
+  background: var(--green-soft);
+  border: 1px solid rgba(74,222,128,0.25);
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  color: var(--green);
+  font-weight: 500;
+}
+#complete-banner.visible { display: flex; }
+#complete-banner .cb-icon { font-size: 1.1rem; flex-shrink: 0; }
 
 /* ── Status / error ──────────────────────────────────────── */
 #status {
@@ -336,6 +458,7 @@ body {
   #narrator, #choices { padding-left: 1.5rem; padding-right: 1.5rem; }
   #narrator-text { font-size: 1rem; }
   #splash { padding: 2.25rem 1.5rem; }
+  #progress-widget { min-width: 90px; }
 }
 </style>
 </head>
@@ -343,8 +466,17 @@ body {
 
 <div id="app">
   <div id="header">
-    <h1 id="title-text">Virtual <em>Field Trip</em></h1>
-    <div class="subtitle" id="subtitle-text">K12 Guide</div>
+    <div id="header-text">
+      <h1 id="title-text">Virtual <em>Field Trip</em></h1>
+      <div class="subtitle" id="subtitle-text">K12 Guide</div>
+    </div>
+    <div id="progress-widget">
+      <div id="progress-label">Explored</div>
+      <div id="progress-bar-track">
+        <div id="progress-bar-fill"></div>
+      </div>
+      <div id="progress-pct">0%</div>
+    </div>
   </div>
   <div id="book">
     <div id="status"><div class="big">📖</div><p>Loading…</p></div>
@@ -358,7 +490,9 @@ let data         = null;
 let fileBase     = '';
 let currentNode  = null;
 let isPlaying    = false;
-let visitedNodes = new Set();
+let visitedNodes = new Set();  // nodeIds the user has landed on
+let totalNodes   = 0;
+let tripComplete = false;
 const player     = document.getElementById('player');
 
 // ─── Audio Cache ──────────────────────────────────────────
@@ -382,6 +516,7 @@ function prefetchNodeAudio(nodeId) {
   const node = data.nodes[nodeId];
   if (!node || !node.choices) return;
   node.choices.forEach(choice => {
+    if (choice.back) return;
     const nextNode = data.nodes[choice.next];
     if (!nextNode || !nextNode.audio) return;
     const safePath = sanitiseAudioPath(nextNode.audio);
@@ -408,6 +543,47 @@ function sanitiseAudioPath(audioPath) {
 }
 
 function buildAudioUrl(audioPath) { return fileBase + audioPath; }
+
+// ─── Progress ─────────────────────────────────────────────
+function computeTotalNodes() {
+  return Object.keys(data.nodes).length;
+}
+
+function updateProgress() {
+  const pct  = totalNodes > 0 ? Math.round((visitedNodes.size / totalNodes) * 100) : 0;
+  const fill  = document.getElementById('progress-bar-fill');
+  const pctEl = document.getElementById('progress-pct');
+  if (!fill || !pctEl) return;
+
+  fill.style.width  = pct + '%';
+  pctEl.textContent = pct + '%';
+
+  if (pct >= 100 && !tripComplete) {
+    tripComplete = true;
+    fill.classList.add('complete');
+    pctEl.classList.add('complete');
+    document.getElementById('book').classList.add('complete');
+    showCompleteBanner();
+    playThankYouAudio();
+  }
+}
+
+function showCompleteBanner() {
+  const banner = document.getElementById('complete-banner');
+  if (banner) banner.classList.add('visible');
+}
+
+function playThankYouAudio() {
+  if (!data.thank_you) return;
+  const safePath = sanitiseAudioPath(data.thank_you);
+  if (!safePath) return;
+  const url = buildAudioUrl(safePath);
+  prefetchAudio(url);
+  // Short delay so any current narration audio doesn't clash
+  setTimeout(() => {
+    playAudioFile(resolveAudioSrc(url), url);
+  }, 500);
+}
 
 // ─── Init ─────────────────────────────────────────────────
 async function init() {
@@ -438,6 +614,8 @@ async function init() {
     return;
   }
 
+  totalNodes = computeTotalNodes();
+
   const tripTitle = String(data.root || 'Virtual Field Trip').trim();
   document.title  = tripTitle;
 
@@ -452,6 +630,12 @@ async function init() {
   const startNode = data.nodes[data.start_node];
   if (startNode && startNode.audio) {
     const safePath = sanitiseAudioPath(startNode.audio);
+    if (safePath) prefetchAudio(buildAudioUrl(safePath));
+  }
+
+  // Pre-fetch thank-you audio if present
+  if (data.thank_you) {
+    const safePath = sanitiseAudioPath(data.thank_you);
     if (safePath) prefetchAudio(buildAudioUrl(safePath));
   }
 
@@ -485,7 +669,11 @@ function showSplash(tripTitle) {
   const btn = document.createElement('button');
   btn.id = 'start-btn';
   btn.textContent = 'Begin Trip →';
-  btn.addEventListener('click', () => { renderShell(); goTo(data.start_node, true, null); });
+  btn.addEventListener('click', () => {
+    document.getElementById('progress-widget').style.display = 'flex';
+    renderShell();
+    goTo(data.start_node, true, null, false);
+  });
 
   splash.appendChild(icon);
   splash.appendChild(title);
@@ -506,7 +694,7 @@ function renderShell() {
   narratorLabel.id = 'narrator-label';
   narratorLabel.textContent = 'Narrator';
 
-  // Q row — hidden until first choice is made
+  // Q row — hidden until a non-back forward choice is made
   const qaQuestion = document.createElement('div');
   qaQuestion.id = 'qa-question';
 
@@ -520,7 +708,7 @@ function renderShell() {
   qaQuestion.appendChild(qLabel);
   qaQuestion.appendChild(qText);
 
-  // A row — always visible, but A: label hidden on start node
+  // A row
   const qaAnswer = document.createElement('div');
   qaAnswer.id = 'qa-answer';
 
@@ -556,21 +744,36 @@ function renderShell() {
   choicesLabel.textContent = 'Your response';
   choices.appendChild(choicesLabel);
 
+  // Completion banner — hidden until full exploration
+  const completeBanner = document.createElement('div');
+  completeBanner.id = 'complete-banner';
+  const cbIcon = document.createElement('span');
+  cbIcon.className = 'cb-icon';
+  cbIcon.textContent = '🎉';
+  const cbText = document.createElement('span');
+  cbText.textContent = "You've explored the entire trip — great work!";
+  completeBanner.appendChild(cbIcon);
+  completeBanner.appendChild(cbText);
+  choices.appendChild(completeBanner);
+
   book.appendChild(narrator);
   book.appendChild(choices);
 }
 
 // ─── Navigation ───────────────────────────────────────────
-// choiceText = the button label the student clicked, null on first load
-function goTo(nodeId, playAudio = false, choiceText = null) {
+// isBack = true  → suppress Q:/A: display, don't play audio
+// isBack = false → normal forward navigation
+function goTo(nodeId, playAudio = false, choiceText = null, isBack = false) {
   const node = data.nodes[nodeId];
   if (!node) { console.warn('Unknown node:', nodeId); return; }
 
   visitedNodes.add(nodeId);
   currentNode = nodeId;
 
-  renderNarrator(node, choiceText);
+  // When going back, clear Q: so the narrator just shows its text freshly
+  renderNarrator(node, isBack ? null : choiceText);
   renderChoices(node);
+  updateProgress();
   prefetchNodeAudio(nodeId);
 
   if (playAudio && node.audio) {
@@ -586,8 +789,9 @@ function goTo(nodeId, playAudio = false, choiceText = null) {
 
 function choiceClicked(choice) {
   if (isPlaying) return;
-  // Pass the button's text as the question
-  goTo(choice.next, !choice.back, choice.text);
+  const isBack = !!choice.back;
+  // Back: no audio, no Q: label. Forward: play audio, show Q:
+  goTo(choice.next, !isBack, choice.text, isBack);
 }
 
 // ─── Audio ────────────────────────────────────────────────
@@ -622,7 +826,6 @@ function playAudioFile(src, canonicalUrl) {
 
 // ─── Rendering ────────────────────────────────────────────
 function renderNarrator(node, choiceText) {
-  // Q row: show if a choice was clicked, hide on the opening node
   const qaQuestion = document.getElementById('qa-question');
   const qText      = document.getElementById('qa-question-text');
   const aLabel     = document.getElementById('a-label');
@@ -630,14 +833,13 @@ function renderNarrator(node, choiceText) {
   if (choiceText) {
     qText.textContent = choiceText;
     qaQuestion.classList.add('visible');
-    aLabel.style.visibility = 'visible'; // show A: label once a choice has been made
+    aLabel.style.visibility = 'visible';
   } else {
     qText.textContent = '';
     qaQuestion.classList.remove('visible');
-    aLabel.style.visibility = 'hidden'; // hide A: label on the start node
+    aLabel.style.visibility = 'hidden';
   }
 
-  // A row: animate in the node's answer text
   const narratorText = document.getElementById('narrator-text');
   narratorText.style.animation = 'none';
   void narratorText.offsetHeight;
@@ -649,25 +851,40 @@ function renderNarrator(node, choiceText) {
 function renderChoices(node) {
   const container = document.getElementById('choices');
   const label     = document.getElementById('choices-label');
-  container.textContent = '';
-  container.appendChild(label);
+  const banner    = document.getElementById('complete-banner');
+
+  // Remove all children except the label and completion banner
+  Array.from(container.children).forEach(child => {
+    if (child !== label && child !== banner) child.remove();
+  });
 
   const choices = node.choices || [];
   if (choices.length === 0) {
     const end = document.createElement('p');
     end.style.cssText = 'color:var(--text-3);font-size:0.85rem;font-style:italic;margin-top:0.5rem;';
     end.textContent = '— End of trip —';
-    container.appendChild(end);
+    container.insertBefore(end, banner);
     return;
   }
 
-  choices.forEach(choice => {
+  const forwardChoices = choices.filter(c => !c.back);
+  const backChoices    = choices.filter(c =>  c.back);
+
+  forwardChoices.forEach(choice => {
     const btn = document.createElement('button');
     btn.className = 'choice-btn fade-in';
     if (visitedNodes.has(choice.next)) btn.classList.add('visited');
     btn.textContent = choice.text;
     btn.addEventListener('click', () => choiceClicked(choice));
-    container.appendChild(btn);
+    container.insertBefore(btn, banner);
+  });
+
+  backChoices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn back-btn fade-in';
+    btn.textContent = choice.text;
+    btn.addEventListener('click', () => choiceClicked(choice));
+    container.insertBefore(btn, banner);
   });
 }
 
