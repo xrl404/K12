@@ -4,247 +4,307 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Virtual Field Trip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Crimson+Pro:wght@300;400;500&display=swap');
+/* ── Tokens ──────────────────────────────────────────────── */
+:root {
+  --bg:           #0c1120;
+  --bg-mid:       #111827;
+  --surface:      #161e30;
+  --surface-2:    #1d2740;
+  --border:       rgba(255,255,255,0.06);
+  --border-hi:    rgba(255,255,255,0.11);
 
-  :root {
-    --ink: #1a1208;
-    --parchment: #f5edd8;
-    --parchment-dark: #e8d9b8;
-    --parchment-mid: #eedfc4;
-    --gold: #c9972c;
-    --gold-light: #e8b84b;
-    --gold-dim: #a07820;
-    --muted: #6b5a3e;
-    --disabled: #b8a88a;
-  }
+  --accent:       #5b8dee;
+  --accent-glow:  rgba(91,141,238,0.18);
+  --accent-soft:  rgba(91,141,238,0.45);
+  --gold:         #f2c14e;
+  --gold-glow:    rgba(242,193,78,0.12);
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  --text:         #dde4f0;
+  --text-2:       #7f8fa8;
+  --text-3:       #445066;
+  --disabled:     #3a4558;
 
-  body {
-    background: var(--ink);
-    font-family: 'Crimson Pro', Georgia, serif;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    background-image:
-      radial-gradient(ellipse at 20% 50%, #2a1f08 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 20%, #1f1408 0%, transparent 50%);
-  }
+  --font-ui:      'Sora', system-ui, sans-serif;
+  --font-display: 'Fraunces', Georgia, serif;
+  --radius:       14px;
+  --radius-sm:    9px;
+  --card-shadow:  0 0 0 1px var(--border), 0 20px 60px rgba(0,0,0,0.55);
+}
 
-  #app { width: 100%; max-width: 680px; }
+/* ── Reset ───────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* ── Header ── */
-  #header {
-    text-align: center;
-    margin-bottom: 2.5rem;
-    opacity: 0;
-    transform: translateY(-12px);
-    animation: fadeUp 0.7s 0.1s forwards;
-  }
+body {
+  font-family: var(--font-ui);
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 55% at 10% 15%, rgba(91,141,238,0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 45% at 90% 80%, rgba(242,193,78,0.05) 0%, transparent 60%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.6;
+}
 
-  #header h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(1.6rem, 4vw, 2.4rem);
-    color: var(--gold-light);
-    letter-spacing: 0.04em;
-    text-shadow: 0 2px 16px rgba(201,151,44,0.25);
-  }
+/* ── App shell ───────────────────────────────────────────── */
+#app { width: 100%; max-width: 640px; }
 
-  #header .subtitle {
-    font-size: 0.85rem;
-    color: var(--muted);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-top: 0.3rem;
-  }
+/* ── Header ──────────────────────────────────────────────── */
+#header {
+  text-align: center;
+  margin-bottom: 2rem;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: rise 0.55s 0.08s ease forwards;
+}
 
-  /* ── Book card ── */
-  #book {
-    background: var(--parchment);
-    border-radius: 4px;
-    box-shadow:
-      0 2px 0 var(--gold-dim),
-      0 8px 40px rgba(0,0,0,0.55),
-      inset 0 1px 0 rgba(255,255,255,0.6);
-    overflow: hidden;
-    opacity: 0;
-    transform: translateY(16px);
-    animation: fadeUp 0.7s 0.3s forwards;
-    position: relative;
-  }
+#header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
 
-  /* Spine stripe */
-  #book::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 6px;
-    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dim) 100%);
-  }
+#header h1 em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--accent);
+}
 
-  /* ── Narrator box ── */
-  #narrator {
-    padding: 2.2rem 2.4rem 2rem 2.8rem;
-    border-bottom: 1px solid var(--parchment-dark);
-    position: relative;
-    min-height: 130px;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
+#header .subtitle {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-top: 0.3rem;
+}
 
-  #narrator-label {
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold-dim);
-    font-weight: 500;
-  }
+/* ── Book card ───────────────────────────────────────────── */
+#book {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(14px);
+  animation: rise 0.55s 0.22s ease forwards;
+  position: relative;
+}
 
-  #narrator-text {
-    font-size: 1.18rem;
-    line-height: 1.75;
-    color: var(--ink);
-    font-weight: 300;
-    font-style: italic;
-    flex: 1;
-  }
+/* Top accent line */
+#book::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--accent-soft) 25%,
+    var(--accent) 50%,
+    var(--accent-soft) 75%,
+    transparent 100%);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
 
-  /* Audio waveform indicator */
-  #audio-indicator {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.78rem;
-    color: var(--gold-dim);
-    min-height: 1.2rem;
-    opacity: 1;
-    transition: opacity 0.3s;
-  }
+/* ── Narrator box ────────────────────────────────────────── */
+#narrator {
+  padding: 2rem 2.25rem 1.75rem;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
 
-  #audio-indicator.hidden { opacity: 0; pointer-events: none; }
+#narrator-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-soft);
+}
 
-  .wave { display: flex; gap: 2px; align-items: center; }
+#narrator-text {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--text);
+  flex: 1;
+}
 
-  .wave span {
-    display: block;
-    width: 2px;
-    background: var(--gold);
-    border-radius: 2px;
-    animation: waveBounce 0.8s ease-in-out infinite;
-  }
-  .wave span:nth-child(1) { height: 6px;  animation-delay: 0s; }
-  .wave span:nth-child(2) { height: 12px; animation-delay: 0.1s; }
-  .wave span:nth-child(3) { height: 8px;  animation-delay: 0.2s; }
-  .wave span:nth-child(4) { height: 14px; animation-delay: 0.05s; }
-  .wave span:nth-child(5) { height: 6px;  animation-delay: 0.15s; }
+/* ── Audio indicator ─────────────────────────────────────── */
+#audio-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 1.1rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-2);
+  transition: opacity 0.25s;
+}
 
-  @keyframes waveBounce {
-    0%, 100% { transform: scaleY(1); }
-    50%       { transform: scaleY(0.3); }
-  }
+#audio-indicator.hidden { opacity: 0; pointer-events: none; }
 
-  /* ── Choices ── */
-  #choices {
-    padding: 1.6rem 2.4rem 2rem 2.8rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.7rem;
-  }
+.wave { display: flex; align-items: center; gap: 2px; }
 
-  #choices-label {
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold-dim);
-    font-weight: 500;
-    margin-bottom: 0.2rem;
-  }
+.wave span {
+  display: block;
+  width: 2.5px;
+  border-radius: 3px;
+  background: var(--accent);
+  animation: waveBounce 0.85s ease-in-out infinite;
+}
+.wave span:nth-child(1) { height: 5px;  animation-delay: 0.00s; }
+.wave span:nth-child(2) { height: 11px; animation-delay: 0.12s; }
+.wave span:nth-child(3) { height: 7px;  animation-delay: 0.24s; }
+.wave span:nth-child(4) { height: 13px; animation-delay: 0.06s; }
+.wave span:nth-child(5) { height: 6px;  animation-delay: 0.18s; }
 
-  .choice-btn {
-    background: transparent;
-    border: 1px solid var(--parchment-dark);
-    border-left: 3px solid transparent;
-    border-radius: 2px;
-    padding: 0.85rem 1.2rem;
-    font-family: 'Crimson Pro', Georgia, serif;
-    font-size: 1.05rem;
-    color: var(--ink);
-    cursor: pointer;
-    text-align: left;
-    transition: border-color 0.18s, background 0.18s, color 0.18s, transform 0.12s;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-  }
+@keyframes waveBounce {
+  0%, 100% { transform: scaleY(1); }
+  50%       { transform: scaleY(0.2); }
+}
 
-  .choice-btn::before {
-    content: '›';
-    color: var(--gold);
-    font-size: 1.3rem;
-    line-height: 1;
-    flex-shrink: 0;
-    transition: transform 0.18s;
-  }
+/* ── Choices ─────────────────────────────────────────────── */
+#choices {
+  padding: 1.5rem 2.25rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
 
-  .choice-btn:hover:not(:disabled) {
-    background: var(--parchment-mid);
-    border-left-color: var(--gold);
-    transform: translateX(3px);
-  }
+#choices-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 0.2rem;
+}
 
-  .choice-btn:hover:not(:disabled)::before { transform: translateX(2px); }
-  .choice-btn:active:not(:disabled) { transform: translateX(3px) scale(0.99); }
+.choice-btn {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1.1rem;
+  font-family: var(--font-ui);
+  font-size: 0.93rem;
+  font-weight: 400;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s, box-shadow 0.15s;
+  position: relative;
+  overflow: hidden;
+}
 
-  .choice-btn:disabled {
-    color: var(--disabled);
-    cursor: not-allowed;
-    border-left-color: transparent;
-  }
+/* Hover shimmer */
+.choice-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 0%, var(--accent-glow) 100%);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
 
-  .choice-btn:disabled::before { color: var(--disabled); }
+.choice-btn:hover:not(:disabled)::after   { opacity: 1; }
+.choice-btn:hover:not(:disabled) {
+  border-color: var(--accent-soft);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.choice-btn:active:not(:disabled) { transform: scale(0.99); }
 
-  .choice-btn.visited { font-style: italic; color: var(--muted); }
+/* Arrow icon */
+.choice-btn::before {
+  content: '›';
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--accent);
+  flex-shrink: 0;
+  transition: transform 0.15s, color 0.15s;
+}
+.choice-btn:hover:not(:disabled)::before { transform: translateX(2px); }
 
-  /* ── Loading / error ── */
-  #status {
-    padding: 3rem 2.4rem;
-    text-align: center;
-    color: var(--muted);
-    font-style: italic;
-    font-size: 1.05rem;
-  }
+.choice-btn:disabled {
+  color: var(--disabled);
+  cursor: not-allowed;
+  background: var(--surface);
+}
+.choice-btn:disabled::before { color: var(--text-3); }
 
-  #status .big { font-size: 2rem; margin-bottom: 0.8rem; }
-  #status code {
-    background: var(--parchment-dark);
-    padding: 0.1em 0.4em;
-    border-radius: 3px;
-    font-style: normal;
-    font-size: 0.9em;
-  }
+.choice-btn.visited {
+  font-style: italic;
+  color: var(--text-2);
+}
+.choice-btn.visited::before { color: var(--text-3); }
 
-  @keyframes fadeUp {
-    to { opacity: 1; transform: translateY(0); }
-  }
+/* ── Status / error ──────────────────────────────────────── */
+#status {
+  padding: 3.5rem 2rem;
+  text-align: center;
+  color: var(--text-2);
+  font-size: 0.95rem;
+  font-style: italic;
+}
 
-  .fade-in { animation: fadeUp 0.35s ease forwards; }
+#status .big { font-size: 2.2rem; margin-bottom: 0.75rem; }
 
-  @media (max-width: 480px) {
-    body { padding: 1rem; }
-    #narrator, #choices { padding-left: 1.8rem; padding-right: 1.4rem; }
-  }
+#status code {
+  background: var(--surface-2);
+  color: var(--accent);
+  padding: 0.15em 0.45em;
+  border-radius: 5px;
+  font-style: normal;
+  font-size: 0.85em;
+}
+
+/* ── Animations ──────────────────────────────────────────── */
+@keyframes rise {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  opacity: 0;
+  animation: rise 0.3s ease forwards;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 4px; }
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 480px) {
+  body { padding: 1rem 0.75rem; }
+  #narrator, #choices { padding-left: 1.5rem; padding-right: 1.5rem; }
+  #narrator-text { font-size: 1rem; }
+}
 </style>
 </head>
 <body>
 
 <div id="app">
   <div id="header">
-    <h1 id="title-text">Virtual Field Trip</h1>
-    <div class="subtitle" id="subtitle-text">Interactive Story</div>
+    <h1 id="title-text">Virtual <em>Field Trip</em></h1>
+    <div class="subtitle" id="subtitle-text">K12 Guide</div>
   </div>
   <div id="book">
     <div id="status"><div class="big">📖</div>Loading…</div>
@@ -254,18 +314,18 @@
 <audio id="player"></audio>
 
 <script>
-// ─── State ───────────────────────────────────────────────────────────────────
-let data        = null;
-let fileBase    = '';   // directory of the .vfjf file, with trailing slash, relative to site root
-let currentNode = null;
-let isPlaying   = false;
-let visitedNodes = new Set();  // nodes visited via forward navigation (not back)
-const player    = document.getElementById('player');
+// ─── State ────────────────────────────────────────────────
+let data         = null;
+let fileBase     = '';
+let currentNode  = null;
+let isPlaying    = false;
+let visitedNodes = new Set();
+const player     = document.getElementById('player');
 
-// ─── Init ────────────────────────────────────────────────────────────────────
+// ─── Init ─────────────────────────────────────────────────
 async function init() {
-  const params  = new URLSearchParams(location.search);
-  const filePath = params.get('file');   // e.g. "Virtual_Feildtrips/Louvre_Museum/Louvre_Museum.VFJF"
+  const params   = new URLSearchParams(location.search);
+  const filePath = params.get('file');
 
   if (!filePath) {
     showError(
@@ -275,16 +335,10 @@ async function init() {
     return;
   }
 
-  // Derive the base directory for resolving audio paths.
-  // filePath is always relative to the repo root (same origin as Main.html).
-  // Strip the filename to get the folder, then prepend a leading slash so it's
-  // an absolute path from the site root — safe regardless of where Main.html lives.
   const slashIdx = filePath.lastIndexOf('/');
   const relDir   = slashIdx >= 0 ? filePath.substring(0, slashIdx + 1) : '';
-  // Resolve to absolute path from site root
   fileBase = resolveFromPageRoot(relDir);
 
-  // Fetch the VFJF (JSON) file
   const fetchUrl = resolveFromPageRoot(filePath);
   try {
     const res = await fetch(fetchUrl);
@@ -295,10 +349,12 @@ async function init() {
     return;
   }
 
-  // Update page titles
   const title = data.root || 'Virtual Field Trip';
   document.title = title;
-  document.getElementById('title-text').textContent = title;
+  // Wrap last word in italic accent span
+  const words = title.split(' ');
+  document.getElementById('title-text').innerHTML =
+    words.slice(0, -1).join(' ') + ' <em>' + words[words.length - 1] + '</em>';
 
   renderBook();
   goTo(data.start_node);
@@ -308,51 +364,32 @@ async function init() {
   }
 }
 
-// ─── Path helpers ─────────────────────────────────────────────────────────────
-/**
- * Given a path that is relative to the repo root (not to Main.html's location),
- * return an absolute URL path rooted at the GitHub Pages site root.
- *
- * On GitHub Pages the site root equals the origin, so we just prefix with '/'.
- * If the repo is served from a subpath (e.g. /K12/) this function handles it by
- * anchoring everything relative to the origin root.
- */
+// ─── Path helpers ─────────────────────────────────────────
 function resolveFromPageRoot(relativePath) {
-  // Build a URL using the page's origin so '/' means the site root.
   const url = new URL('/' + relativePath, location.origin);
-  return url.pathname; // returns e.g. /Virtual_Feildtrips/Louvre_Museum/
+  return url.pathname;
 }
 
-/**
- * Given an audio path from the VFJF (e.g. "audio/entrance.mp3"),
- * return the full absolute path by joining it with the .vfjf file's directory.
- */
 function buildAudioUrl(audioPath) {
-  // audioPath is relative to the VFJF file's own folder (fileBase is absolute from site root)
   const url = new URL(fileBase + audioPath, location.origin);
   return url.href;
 }
 
-// ─── Navigation ──────────────────────────────────────────────────────────────
+// ─── Navigation ───────────────────────────────────────────
 function goTo(nodeId) {
   const node = data.nodes[nodeId];
   if (!node) { console.warn('Unknown node:', nodeId); return; }
-
   visitedNodes.add(nodeId);
   currentNode = nodeId;
-
   renderNarrator(node);
   renderChoices(node);
 }
 
 function choiceClicked(choice) {
   if (isPlaying) return;
-
   if (choice.back) {
-    // Back: navigate silently, no audio, no locking
     goTo(choice.next);
   } else {
-    // Forward: navigate, then play narrator audio and lock until it finishes
     goTo(choice.next);
     const node = data.nodes[choice.next];
     if (node && node.audio) {
@@ -361,16 +398,14 @@ function choiceClicked(choice) {
   }
 }
 
-// ─── Audio ───────────────────────────────────────────────────────────────────
+// ─── Audio ────────────────────────────────────────────────
 function playAudioFile(src, onEnd) {
   player.pause();
   player.src = src;
   isPlaying = true;
   showWave(true);
   lockChoices(true);
-
-  player.play().catch(() => finishAudio(onEnd)); // gracefully skip if blocked/missing
-
+  player.play().catch(() => finishAudio(onEnd));
   player.onended = () => finishAudio(onEnd);
   player.onerror = () => finishAudio(onEnd);
 }
@@ -382,7 +417,7 @@ function finishAudio(onEnd) {
   if (onEnd) onEnd();
 }
 
-// ─── Rendering ───────────────────────────────────────────────────────────────
+// ─── Rendering ────────────────────────────────────────────
 function renderBook() {
   document.getElementById('book').innerHTML = `
     <div id="narrator">
@@ -404,7 +439,7 @@ function renderBook() {
 function renderNarrator(node) {
   const el = document.getElementById('narrator-text');
   el.style.animation = 'none';
-  void el.offsetHeight; // force reflow to restart animation
+  void el.offsetHeight;
   el.style.animation = '';
   el.classList.add('fade-in');
   el.textContent = node.text || '';
@@ -440,7 +475,7 @@ function showError(html) {
     `<div id="status"><div class="big">⚠️</div>${html}</div>`;
 }
 
-// ─── Go ──────────────────────────────────────────────────────────────────────
+// ─── Go ───────────────────────────────────────────────────
 init();
 </script>
 </body>
