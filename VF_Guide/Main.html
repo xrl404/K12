@@ -577,7 +577,7 @@
   <!-- Header: title + progress widget -->
   <div id="header">
     <div id="header-text">
-      <h1 id="title-text">Virtual <em>Field Trip</em></h1>
+      <h1 id="title-text">Virtual <em>Field Tour</em></h1>
       <div class="subtitle" id="subtitle-text">K12 Guide</div>
     </div>
     <div id="progress-widget">
@@ -831,7 +831,7 @@
         : 'Use the choices below to explore each stop on the trip.',
     }));
 
-    const btn = el('button', { id: 'start-btn', text: 'Begin Trip →' });
+    const btn = el('button', { id: 'start-btn', text: 'Begin Tour →' });
     btn.addEventListener('click', () => {
       document.getElementById('progress-widget').style.display = 'flex';
       renderShell();
