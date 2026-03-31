@@ -23,7 +23,7 @@
         { "text": "How old is it?", "next": "age" },
         { "text": "Why did it become a museum?", "next": "museum_reason" },
         { "text": "Let's go back", "next": "entrance", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -32,7 +32,7 @@
       "audio": "audio/kings.mp3",
       "choices": [
         { "text": "Let's go back", "next": "what_is_louvre", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -41,7 +41,7 @@
       "audio": "audio/age.mp3",
       "choices": [
         { "text": "Let's go back", "next": "what_is_louvre", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -50,7 +50,7 @@
       "audio": "audio/museum_reason.mp3",
       "choices": [
         { "text": "Let's go back", "next": "what_is_louvre", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -73,7 +73,7 @@
         { "text": "Who painted it?", "next": "mona_artist" },
         { "text": "Why is she smiling?", "next": "mona_smile" },
         { "text": "Let's go back", "next": "famous_art", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -82,7 +82,7 @@
       "audio": "audio/mona_famous.mp3",
       "choices": [
         { "text": "Let's go back", "next": "mona_lisa", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -91,7 +91,7 @@
       "audio": "audio/mona_artist.mp3",
       "choices": [
         { "text": "Let's go back", "next": "mona_lisa", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -100,7 +100,7 @@
       "audio": "audio/mona_smile.mp3",
       "choices": [
         { "text": "Let's go back", "next": "mona_lisa", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -111,7 +111,7 @@
         { "text": "Why doesn’t it have arms?", "next": "statue_arms" },
         { "text": "How old is it?", "next": "statue_age" },
         { "text": "Let's go back", "next": "famous_art", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -120,7 +120,7 @@
       "audio": "audio/statue_arms.mp3",
       "choices": [
         { "text": "Let's go back", "next": "statue", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -129,7 +129,7 @@
       "audio": "audio/statue_age.mp3",
       "choices": [
         { "text": "Let's go back", "next": "statue", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -140,7 +140,7 @@
         { "text": "What is a mummy?", "next": "mummy" },
         { "text": "Why did Egyptians make them?", "next": "afterlife" },
         { "text": "Let's go back", "next": "famous_art", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -149,7 +149,7 @@
       "audio": "audio/mummy.mp3",
       "choices": [
         { "text": "Let's go back", "next": "egypt", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -158,7 +158,7 @@
       "audio": "audio/afterlife.mp3",
       "choices": [
         { "text": "Let's go back", "next": "egypt", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -169,7 +169,7 @@
         { "text": "Why glass?", "next": "glass" },
         { "text": "Do people like it?", "next": "opinion" },
         { "text": "Let's go back", "next": "entrance", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -178,7 +178,7 @@
       "audio": "audio/glass.mp3",
       "choices": [
         { "text": "Let's go back", "next": "pyramid", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -187,7 +187,7 @@
       "audio": "audio/opinion.mp3",
       "choices": [
         { "text": "Let's go back", "next": "pyramid", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -200,7 +200,7 @@
         { "text": "What did they steal?", "next": "heist_items" },
         { "text": "Were they ever caught?", "next": "heist_caught" },
         { "text": "Let's go back", "next": "entrance", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -209,7 +209,7 @@
       "audio": "audio/heist_entry.mp3",
       "choices": [
         { "text": "Let's go back", "next": "heist", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -218,7 +218,7 @@
       "audio": "audio/heist_time.mp3",
       "choices": [
         { "text": "Let's go back", "next": "heist", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -227,7 +227,7 @@
       "audio": "audio/heist_items.mp3",
       "choices": [
         { "text": "Let's go back", "next": "heist", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -236,7 +236,7 @@
       "audio": "audio/heist_caught.mp3",
       "choices": [
         { "text": "Let's go back", "next": "heist", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
@@ -245,7 +245,7 @@
       "audio": "audio/visit.mp3",
       "choices": [
         { "text": "Let's go back", "next": "entrance", "back": true },
-        { "text": "End tour", "next": "end" }
+        { "text": "End tour", "next": "end", "end": true }
       ]
     },
 
