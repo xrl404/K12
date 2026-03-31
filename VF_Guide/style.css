@@ -776,3 +776,39 @@ body {
  
 #thanks-close:hover  { opacity: 0.90; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0, 53, 240, 0.40); }
 #thanks-close:active { transform: scale(0.98); }
+
+/* --- strider */
+#book {
+  /* existing styles stay the same — just add: */
+  isolation: isolate;
+}
+
+#strider-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('/K12/images/strider.png');
+  background-repeat: no-repeat;
+  background-size: auto 92%;
+  background-position: right -10px bottom 0;
+  opacity: 0.10;
+  mask-image: linear-gradient(
+    to left,
+    rgba(0,0,0,0.6) 0%,
+    rgba(0,0,0,0.25) 40%,
+    transparent 75%
+  );
+  -webkit-mask-image: linear-gradient(
+    to left,
+    rgba(0,0,0,0.6) 0%,
+    rgba(0,0,0,0.25) 40%,
+    transparent 75%
+  );
+  pointer-events: none;
+  z-index: 0;
+  border-radius: var(--radius);
+}
+
+#book > *:not(#strider-bg) {
+  position: relative;
+  z-index: 1;
+}
