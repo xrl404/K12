@@ -4,9 +4,10 @@
    DATA SCHEMA  (*.VFJF — a JSON file)
    -------------------------------------------------------------
    {
-     "root":       "Trip Title",
-     "start_node": "node_id",
-     "thank_you":  "audio/thankyou.mp3",   // optional
+     "root":            "Trip Title",
+     "start_node":      "node_id",
+     "thank_you":       "audio/thankyou.mp3",  // optional — plays on completion
+     "thank_you_text":  "Thanks for joining us!", // optional — shown in completion banner
      "nodes": {
        "node_id": {
          "text":    "Narrator text shown in the card.",
@@ -22,18 +23,30 @@
    URL FORMAT
    -------------------------------------------------------------
    ?file=Virtual_Fieldtrips/TripName/TripName.VFJF
+
+   IFRAME USAGE
+   -------------------------------------------------------------
+   When the tour completes, player.js posts a message to the
+   parent window so the embedding page can close / hide the iframe:
+
+     window.addEventListener('message', (e) => {
+       if (e.data?.type === 'vft-complete') {
+         // e.g. document.getElementById('tour-frame').remove();
+       }
+     });
    ============================================================= */
 
 
 // ── State ────────────────────────────────────────────────────
 
-let data         = null;       // parsed JSON from the .VFJF file
-let fileBase     = '';         // root path used to resolve relative audio URLs
-let currentNode  = null;       // id of the node currently on screen
-let isPlaying    = false;      // true while narration audio is playing
-let visitedNodes = new Set();  // ids of every node the user has seen
-let totalNodes   = 0;
-let tripComplete = false;
+let data             = null;       // parsed JSON from the .VFJF file
+let fileBase         = '';         // root path used to resolve relative audio URLs
+let currentNode      = null;       // id of the node currently on screen
+let isPlaying        = false;      // true while narration audio is playing
+let visitedNodes     = new Set();  // ids of every node the user has seen
+let audioPlayedNodes = new Set();  // ids of nodes whose audio has already played — no replays on revisit
+let totalNodes       = 0;
+let tripComplete     = false;
 
 // When the trip completes mid-playback, the thank-you clip is queued here
 // and fired once the current narration finishes.
@@ -134,7 +147,24 @@ function updateProgress() {
 }
 
 function showCompleteBanner() {
-  document.getElementById('complete-banner')?.classList.add('visible');
+  const banner = document.getElementById('complete-banner');
+  if (!banner) return;
+
+  // Replace default text with thank_you_text from the data file if provided.
+  const thankYouText = data.thank_you_text?.trim();
+  if (thankYouText) {
+    const textNode = banner.querySelector('.cb-text');
+    if (textNode) textNode.textContent = thankYouText;
+  }
+
+  banner.classList.add('visible');
+
+  // Notify the parent page so it can close / hide the iframe.
+  try {
+    window.parent.postMessage({ type: 'vft-complete' }, '*');
+  } catch (e) {
+    // Silently ignore — not critical if there's no parent.
+  }
 }
 
 // Queue the thank-you clip so it plays after the current narration ends
@@ -292,10 +322,11 @@ function renderShell() {
   const choices = el('div', { id: 'choices' });
   choices.appendChild(el('div', { id: 'choices-label', text: 'Your response' }));
 
-  // Completion banner — hidden until all nodes are visited
+  // Completion banner — hidden until all nodes are visited.
+  // Default text is overridden by thank_you_text in the data file if present.
   const banner = el('div', { id: 'complete-banner' });
   banner.appendChild(el('span', { className: 'cb-icon', text: '🎉' }));
-  banner.appendChild(document.createTextNode("You've explored the entire trip — great work!"));
+  banner.appendChild(el('span', { className: 'cb-text', text: "You've explored the entire trip — great work!" }));
   choices.appendChild(banner);
 
   book.appendChild(choices);
@@ -318,7 +349,8 @@ function goTo(nodeId, playAudio, choiceText, isBack) {
   updateProgress();
   prefetchNodeAudio(nodeId);
 
-  if (playAudio && node.audio) {
+  if (playAudio && node.audio && !audioPlayedNodes.has(nodeId)) {
+    audioPlayedNodes.add(nodeId);
     const safePath = sanitiseAudioPath(node.audio);
     if (safePath) {
       const url = buildAudioUrl(safePath);
@@ -428,6 +460,8 @@ function renderChoices(node) {
     container.insertBefore(btn, banner);
   });
 
+  // Back buttons are rendered separately and never receive the 'visited'
+  // class — navigating backwards doesn't count as exploring a new stop.
   backChoices.forEach(choice => {
     const btn = el('button', { className: 'choice-btn back-btn fade-in', text: choice.text });
     btn.addEventListener('click', () => choiceClicked(choice));
