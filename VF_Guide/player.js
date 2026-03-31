@@ -521,3 +521,31 @@ function el(tag, opts = {}) {
 // ── Bootstrap ────────────────────────────────────────────────
 
 init();
+
+
+// ── Dev shortcut ─────────────────────────────────────────────
+// In the browser console, type:  VFT.fastMode()
+// Audio will jump to near its end so each clip lasts ~0.1 s,
+// letting you skip through nodes instantly without changing any logic.
+// Restore normal playback with:  VFT.fastMode(false)
+
+function _fastModeHandler() {
+  // Seek to 0.1 s before the end so the native 'ended' event fires
+  // naturally — all done-callbacks (unlock choices, thank-you, etc.)
+  // run exactly as they would in production.
+  if (isFinite(player.duration)) {
+    player.currentTime = Math.max(0, player.duration - 0.1);
+  }
+}
+
+window.VFT = {
+  fastMode(on = true) {
+    if (on) {
+      player.addEventListener('play', _fastModeHandler);
+      console.info('[VFT] Fast mode ON — audio capped to ~0.1 s');
+    } else {
+      player.removeEventListener('play', _fastModeHandler);
+      console.info('[VFT] Fast mode OFF — normal playback restored');
+    }
+  },
+};
