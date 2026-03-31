@@ -12,6 +12,7 @@
        "node_id": {
          "text":    "Narrator text shown in the card.",
          "audio":   "audio/node.mp3",       // optional
+         "end":     true,                   // optional — marks a branch as complete without requiring a visit
          "choices": [
            { "text": "Choice label",  "next": "other_node_id" },
            { "text": "← Go back",     "next": "prev_node_id",  "back": true }
@@ -136,11 +137,14 @@ function isSubtreeComplete(nodeId, seen = new Set()) {
   if (seen.has(nodeId)) return true;
   seen.add(nodeId);
 
-  // The node itself must have been visited.
-  if (!visitedNodes.has(nodeId)) return false;
-
   const node = data.nodes[nodeId];
   if (!node) return true; // unknown node — don't block completion
+
+  // End nodes are considered complete regardless of whether they've been visited.
+  if (node.end === true) return true;
+
+  // The node itself must have been visited.
+  if (!visitedNodes.has(nodeId)) return false;
 
   const forwardChoices = (node.choices || []).filter(c => !c.back);
 
