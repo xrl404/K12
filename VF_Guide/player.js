@@ -15,7 +15,8 @@
          "end":     true,                   // optional — marks a branch as complete without requiring a visit
          "choices": [
            { "text": "Choice label",  "next": "other_node_id" },
-           { "text": "← Go back",     "next": "prev_node_id",  "back": true }
+           { "text": "Let's go back", "next": "prev_node_id",  "back": true }
+           { "text": "End tour",      "next": "end", "end": true }
          ]
        }
      }
@@ -23,7 +24,7 @@
 
    URL FORMAT
    -------------------------------------------------------------
-   ?file=Virtual_Fieldtrips/TripName/TripName.VFJF
+   ?file=K12/Virtual_Fieldtrips/TripName/TripName.VFJF
 
    IFRAME USAGE
    -------------------------------------------------------------
@@ -146,7 +147,7 @@ function isSubtreeComplete(nodeId, seen = new Set()) {
   // The node itself must have been visited.
   if (!visitedNodes.has(nodeId)) return false;
 
-  const forwardChoices = (node.choices || []).filter(c => !c.back);
+  const forwardChoices = (node.choices || []).filter(c => !c.back && !c.end);
 
   // Leaf node (no forward choices) — already visited, so complete.
   if (forwardChoices.length === 0) return true;
