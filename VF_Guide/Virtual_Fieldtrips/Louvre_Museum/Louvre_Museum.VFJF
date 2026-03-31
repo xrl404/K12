@@ -22,7 +22,7 @@
         { "text": "Who lived here?", "next": "kings" },
         { "text": "How old is it?", "next": "age" },
         { "text": "Why did it become a museum?", "next": "museum_reason" },
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "entrance" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -31,7 +31,7 @@
       "text": "Kings like Louis XIV lived here before moving to Versailles.",
       "audio": "audio/kings.mp3",
       "choices": [
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "what_is_louvre" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -40,7 +40,7 @@
       "text": "It started as a fortress over 800 years ago!",
       "audio": "audio/age.mp3",
       "choices": [
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "what_is_louvre" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -49,7 +49,7 @@
       "text": "After the French Revolution, it was turned into a place for everyone to enjoy art.",
       "audio": "audio/museum_reason.mp3",
       "choices": [
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "what_is_louvre" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -72,7 +72,7 @@
         { "text": "Who painted it?", "next": "mona_artist" },
         { "text": "Why is she smiling?", "next": "mona_smile" },
         { "text": "Back to famous art menu", "next": "famous_art" },
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "famous_art" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -82,7 +82,7 @@
       "audio": "audio/mona_famous.mp3",
       "choices": [
         { "text": "Back to famous art menu", "next": "famous_art" },
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "mona_lisa" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -92,7 +92,7 @@
       "audio": "audio/mona_artist.mp3",
       "choices": [
         { "text": "Back to famous art menu", "next": "famous_art" },
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "mona_lisa" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -102,7 +102,7 @@
       "audio": "audio/mona_smile.mp3",
       "choices": [
         { "text": "Back to famous art menu", "next": "famous_art" },
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "mona_lisa" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -114,7 +114,7 @@
         { "text": "Why doesn’t it have arms?", "next": "statue_arms" },
         { "text": "How old is it?", "next": "statue_age" },
         { "text": "Back to famous art menu", "next": "famous_art" },
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "famous_art" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -124,7 +124,7 @@
       "audio": "audio/statue_arms.mp3",
       "choices": [
         { "text": "Back to famous art menu", "next": "famous_art" },
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "statue" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -134,7 +134,7 @@
       "audio": "audio/statue_age.mp3",
       "choices": [
         { "text": "Back to famous art menu", "next": "famous_art" },
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "statue" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -146,7 +146,7 @@
         { "text": "What is a mummy?", "next": "mummy" },
         { "text": "Why did Egyptians make them?", "next": "afterlife" },
         { "text": "Back to famous art menu", "next": "famous_art" },
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "famous_art" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -156,7 +156,7 @@
       "audio": "audio/mummy.mp3",
       "choices": [
         { "text": "Back to famous art menu", "next": "famous_art" },
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "egypt" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -166,7 +166,7 @@
       "audio": "audio/afterlife.mp3",
       "choices": [
         { "text": "Back to famous art menu", "next": "famous_art" },
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "egypt" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -177,7 +177,7 @@
       "choices": [
         { "text": "Why glass?", "next": "glass" },
         { "text": "Do people like it?", "next": "opinion" },
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "entrance" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -186,7 +186,7 @@
       "text": "So people can see the old building around it.",
       "audio": "audio/glass.mp3",
       "choices": [
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "pyramid" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -195,7 +195,7 @@
       "text": "Some people love it, some didn’t at first—but now it’s very famous!",
       "audio": "audio/opinion.mp3",
       "choices": [
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "pyramid" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -208,7 +208,7 @@
         { "text": "How long did it take?", "next": "heist_time" },
         { "text": "What did they steal?", "next": "heist_items" },
         { "text": "Were they ever caught?", "next": "heist_caught" },
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "entrance" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -217,7 +217,7 @@
       "text": "They snuck in through a window and dressed like construction workers to blend in.",
       "audio": "audio/heist_entry.mp3",
       "choices": [
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "heist" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -226,7 +226,7 @@
       "text": "The whole heist took under 10 minutes.",
       "audio": "audio/heist_time.mp3",
       "choices": [
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "heist" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -235,7 +235,7 @@
       "text": "They stole valuable French Crown Jewels.",
       "audio": "audio/heist_items.mp3",
       "choices": [
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "heist" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -244,7 +244,7 @@
       "text": "Several suspects were later arrested, but many jewels are still missing!",
       "audio": "audio/heist_caught.mp3",
       "choices": [
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "heist" },
         { "text": "End tour", "next": "end" }
       ]
     },
@@ -253,7 +253,7 @@
       "text": "The Louvre is in Paris, France. It is very far away. But you can click on the glass pyramid here for a virtual tour.",
       "audio": "audio/visit.mp3",
       "choices": [
-        { "text": "Ask another question", "next": "entrance" },
+        { "text": "Let's go back", "next": "entrance" },
         { "text": "End tour", "next": "end" }
       ]
     },
