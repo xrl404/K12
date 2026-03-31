@@ -209,14 +209,10 @@ function scheduleThankYouAudio() {
   if (!data.thank_you) return;
   const safePath = sanitiseAudioPath(data.thank_you);
   if (!safePath) return;
-
+ 
   const url = buildAudioUrl(safePath);
   prefetchAudio(url);
-  pendingThankYou = url;
-
-  // If nothing is playing right now, fire straight away.
-  if (!isPlaying) flushPendingThankYou();
-  // Otherwise the playAudioFile done-callback will call this.
+  pendingThankYou = url; // just a flag now — value isn't used
 }
 
 function flushPendingThankYou() {
@@ -224,7 +220,6 @@ function flushPendingThankYou() {
   pendingThankYou = null;
   thanks();
 }
-
 
 // ── Initialisation ───────────────────────────────────────────
 
@@ -411,34 +406,33 @@ function playAudioFile(src, canonicalUrl) {
   isPlaying  = true;
   setWave(true);
   lockChoices(true);
-
+ 
   const done = () => {
-    isPlaying = false;
+    isPlaying          = false;
+    player._playPromise = null;
     setWave(false);
     lockChoices(false);
-    player.onended  = null;
-    player.onerror  = null;
-
-    // Play the thank-you clip if it was queued while narration ran.
+    player.onended = null;
+    player.onerror = null;
+ 
     if (pendingThankYou) flushPendingThankYou();
   };
-
+ 
   player.onended = done;
-
+ 
   player.onerror = (e) => {
-    // One retry using the original (non-cached) URL.
     if (src !== canonicalUrl) {
       player.src = canonicalUrl;
-      const p = player.play();
-      player._playPromise = p;
-      p.catch(e => { console.warn('play() rejected:', e); done(); });
+      player.play().catch(err => { console.warn('Audio retry failed:', err); done(); });
     } else {
       console.warn('Audio error:', src, e);
       done();
     }
   };
-
-  player.play().catch(e => { console.warn('play() rejected:', e); done(); });
+ 
+  const p = player.play();
+  player._playPromise = p;
+  p.catch(e => { console.warn('play() rejected:', e); done(); });
 }
 
 
@@ -602,7 +596,6 @@ function thanks() {
   const thanksText = data.thank_you_text?.trim()
     || 'Thanks for exploring with me!';
  
-  // Build overlay — no close button, auto-dismisses after audio ends
   const overlay = document.createElement('div');
   overlay.id = 'thanks-overlay';
   overlay.innerHTML = `
@@ -622,35 +615,28 @@ function thanks() {
   document.body.appendChild(overlay);
   runConfetti(document.getElementById('confetti-canvas'));
  
-  // Play thank-you audio.
-  // FIX for AbortError: we wait for any in-flight play() promise to
-  // settle before touching the player again, using .then()/.catch()
-  // on the existing promise rather than calling pause() synchronously.
   if (data.thank_you) {
     const safePath = sanitiseAudioPath(data.thank_you);
     if (safePath) {
       const url = buildAudioUrl(safePath);
       const src = resolveAudioSrc(url);
  
-      // Capture any in-flight play() promise so we can wait for it
-      // to settle before we swap the src — this is what kills the
-      // AbortError.
+      // Wait for any in-flight play() to settle before touching
+      // the player — this prevents the AbortError.
       const inflight = player._playPromise || Promise.resolve();
- 
       inflight.catch(() => {}).then(() => {
-        // Now safe to change src and play
         player.src = src;
  
         const done = () => {
-          player.onended = null;
-          player.onerror = null;
+          player.onended     = null;
+          player.onerror     = null;
+          player._playPromise = null;
           const ind = document.getElementById('thanks-audio-indicator');
           if (ind) ind.classList.add('hidden');
         };
  
         player.onended = done;
         player.onerror = () => {
-          // One retry on the raw URL if the cached blob failed
           if (src !== url) {
             player.src = url;
             player.play().catch(done);
@@ -660,23 +646,20 @@ function thanks() {
         };
  
         const p = player.play();
-        // Stash the promise so future calls can wait on it too
         player._playPromise = p;
         p.catch(done);
       });
  
-      return; // dismiss() will be called by done() above
+      return;
     }
   }
  
-  // No audio configured — just show briefly then dismiss
+  // No audio — hide indicator and fire iframe close after a beat
   const ind = document.getElementById('thanks-audio-indicator');
   if (ind) ind.classList.add('hidden');
-
 }
  
- 
-// 3. ADD this function.
+
 function runConfetti(canvas) {
   const ctx    = canvas.getContext('2d');
   const W      = canvas.width  = window.innerWidth;
