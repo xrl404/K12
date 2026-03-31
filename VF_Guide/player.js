@@ -429,7 +429,9 @@ function playAudioFile(src, canonicalUrl) {
     // One retry using the original (non-cached) URL.
     if (src !== canonicalUrl) {
       player.src = canonicalUrl;
-      player.play().catch(err => { console.warn('Audio retry failed:', err); done(); });
+      const p = player.play();
+      player._playPromise = p;
+      p.catch(e => { console.warn('play() rejected:', e); done(); });
     } else {
       console.warn('Audio error:', src, e);
       done();
@@ -597,80 +599,118 @@ window.VFT = {
 // - thanks screen with confetti this will also later allow us
 // - to easily add rewards for fully completing the tour
 function thanks() {
-  // Build overlay
+  const thanksText = data.thank_you_text?.trim()
+    || 'Thanks for exploring with me!';
+ 
+  // Build overlay — no close button, auto-dismisses after audio ends
   const overlay = document.createElement('div');
   overlay.id = 'thanks-overlay';
   overlay.innerHTML = `
     <canvas id="confetti-canvas"></canvas>
     <div id="thanks-card">
-      <div id="thanks-icon">🎉</div>
-      <p id="thanks-text">${data.thank_you_text?.trim() || "Thanks for exploring with me!"}</p>
-      <button id="thanks-close">Close</button>
+      <span id="thanks-icon">🎉</span>
+      <div id="thanks-heading">Tour complete!</div>
+      <p id="thanks-text">${thanksText}</p>
+      <div id="thanks-audio-indicator">
+        <div class="thanks-wave">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        Playing…
+      </div>
     </div>
   `;
   document.body.appendChild(overlay);
+  runConfetti(document.getElementById('confetti-canvas'));
  
-  // Close button
-  document.getElementById('thanks-close').addEventListener('click', () => {
-    overlay.classList.add('thanks-fade-out');
-    overlay.addEventListener('animationend', () => overlay.remove(), { once: true });
-  });
- 
-  // Play thank-you audio
+  // Play thank-you audio.
+  // FIX for AbortError: we wait for any in-flight play() promise to
+  // settle before touching the player again, using .then()/.catch()
+  // on the existing promise rather than calling pause() synchronously.
   if (data.thank_you) {
     const safePath = sanitiseAudioPath(data.thank_you);
     if (safePath) {
       const url = buildAudioUrl(safePath);
-      playAudioFile(resolveAudioSrc(url), url);
+      const src = resolveAudioSrc(url);
+ 
+      // Capture any in-flight play() promise so we can wait for it
+      // to settle before we swap the src — this is what kills the
+      // AbortError.
+      const inflight = player._playPromise || Promise.resolve();
+ 
+      inflight.catch(() => {}).then(() => {
+        // Now safe to change src and play
+        player.src = src;
+ 
+        const done = () => {
+          player.onended = null;
+          player.onerror = null;
+          const ind = document.getElementById('thanks-audio-indicator');
+          if (ind) ind.classList.add('hidden');
+        };
+ 
+        player.onended = done;
+        player.onerror = () => {
+          // One retry on the raw URL if the cached blob failed
+          if (src !== url) {
+            player.src = url;
+            player.play().catch(done);
+          } else {
+            done();
+          }
+        };
+ 
+        const p = player.play();
+        // Stash the promise so future calls can wait on it too
+        player._playPromise = p;
+        p.catch(done);
+      });
+ 
+      return; // dismiss() will be called by done() above
     }
   }
  
-  // Kick off confetti
-  runConfetti(document.getElementById('confetti-canvas'));
+  // No audio configured — just show briefly then dismiss
+  const ind = document.getElementById('thanks-audio-indicator');
+  if (ind) ind.classList.add('hidden');
+
 }
  
  
-// ── Confetti engine ──────────────────────────────────────────
-// Pure-canvas, no dependencies. Spawns a burst of coloured
-// particles that fall and fade out over ~4 seconds.
- 
+// 3. ADD this function.
 function runConfetti(canvas) {
   const ctx    = canvas.getContext('2d');
   const W      = canvas.width  = window.innerWidth;
   const H      = canvas.height = window.innerHeight;
-  const COLORS = ['#7F77DD','#1D9E75','#EF9F27','#D85A30','#D4537E','#378ADD','#E24B4A'];
-  const COUNT  = 160;
+  const COLORS = ['#62C7FF', '#0035F0', '#8EE68C', '#004C2C', '#FFEA2F', '#A2DEFF', '#4ADC51'];
+  const COUNT  = 180;
  
   const pieces = Array.from({ length: COUNT }, () => ({
-    x:      Math.random() * W,
-    y:      Math.random() * -H * 0.5,           // start above viewport
-    r:      4 + Math.random() * 6,              // radius
-    dx:     (Math.random() - 0.5) * 2,          // horizontal drift
-    dy:     2 + Math.random() * 4,              // fall speed
-    rot:    Math.random() * Math.PI * 2,
-    drot:   (Math.random() - 0.5) * 0.15,       // spin speed
-    color:  COLORS[Math.floor(Math.random() * COLORS.length)],
-    shape:  Math.random() > 0.5 ? 'rect' : 'circle',
-    alpha:  1,
+    x:     Math.random() * W,
+    y:     Math.random() * -H * 0.6,
+    r:     4 + Math.random() * 6,
+    dx:    (Math.random() - 0.5) * 2.2,
+    dy:    2.5 + Math.random() * 4,
+    rot:   Math.random() * Math.PI * 2,
+    drot:  (Math.random() - 0.5) * 0.14,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    shape: Math.random() > 0.45 ? 'rect' : 'circle',
+    alpha: 1,
   }));
  
   let start = null;
-  const DURATION = 4000; // ms
+  const DURATION = 4200;
  
   function frame(ts) {
     if (!start) start = ts;
     const elapsed = ts - start;
     ctx.clearRect(0, 0, W, H);
- 
     let alive = false;
+ 
     for (const p of pieces) {
       p.x   += p.dx;
       p.y   += p.dy;
       p.rot += p.drot;
-      // Fade out in the last second
-      if (elapsed > DURATION - 1000) {
-        p.alpha = Math.max(0, p.alpha - 0.02);
-      }
+      if (elapsed > DURATION - 1200) p.alpha = Math.max(0, p.alpha - 0.018);
       if (p.alpha <= 0) continue;
       alive = true;
  
@@ -681,20 +721,17 @@ function runConfetti(canvas) {
       ctx.fillStyle = p.color;
  
       if (p.shape === 'rect') {
-        ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r);
+        ctx.fillRect(-p.r, -p.r * 0.45, p.r * 2, p.r * 0.9);
       } else {
         ctx.beginPath();
-        ctx.arc(0, 0, p.r / 2, 0, Math.PI * 2);
+        ctx.arc(0, 0, p.r * 0.5, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.restore();
     }
  
-    if (alive && elapsed < DURATION + 500) {
-      requestAnimationFrame(frame);
-    } else {
-      ctx.clearRect(0, 0, W, H);
-    }
+    if (alive && elapsed < DURATION + 400) requestAnimationFrame(frame);
+    else ctx.clearRect(0, 0, W, H);
   }
  
   requestAnimationFrame(frame);
