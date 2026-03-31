@@ -1,45 +1,80 @@
 /* =============================================================
    VIRTUAL FIELD TRIP — styles
-   Brand palette: #E8F6FC · #A2DEFF · #62C7FF · #0035F0 · #01308E
    ============================================================= */
 
 
 /* ── Design tokens ──────────────────────────────────────────── */
 
 :root {
-  /* Palette */
-  --sky-pale:    #E8F6FC;
-  --sky-light:   #A2DEFF;
-  --sky-mid:     #62C7FF;
-  --blue-vivid:  #0035F0;
-  --blue-deep:   #01308E;
+  /* ── Brand palette ── */
 
-  /* Semantic surfaces */
-  --bg:          var(--sky-pale);
-  --surface:     #ffffff;
-  --surface-2:   #f0f9ff;
-  --border:      rgba(0, 53, 240, 0.10);
-  --border-hi:   rgba(0, 53, 240, 0.22);
+  /* Primary blue */
+  --blue-100: #E8F6FC;
+  --blue-300: #A2DEFF;
+  --blue-400: #62C7FF;
+  --blue-500: #0035F0;
+  --blue-700: #01308E;
+
+  /* Secondary */
+  --yellow-400: #FFEA2F;
+  --green-300:  #8EE68C;
+
+  /* Extended — reds */
+  --red-300: #FD6F6B;
+  --red-400: #D81B43;
+  --red-600: #8C0C0B;
+
+  /* Extended — oranges */
+  --orange-100: #FFECE6;
+  --orange-400: #FD762B;
+  --orange-600: #C24F07;
+
+  /* Extended — greens */
+  --green-100: #E6F0EF;
+  --green-400: #4ADC51;
+  --green-600: #004C2C;
+
+  /* Extended — yellows */
+  --yellow-100: #FFF0E5;
+  --yellow-500: #FFCC00;
+
+  /* Extended — other */
+  --cyan-200:   #C9F9FE;
+  --white:      #FFFFFF;
+  --purple-400: #F380FC;
+  --purple-500: #A40BCF;
+  --purple-600: #9F1F77;
+  --black-300:  #3A3A3A;
+  --black-600:  #141414;
+
+  /* ── Semantic tokens (mapped from palette above) ── */
+
+  /* Surfaces */
+  --bg:          var(--blue-100);
+  --surface:     var(--white);
+  --surface-2:   color-mix(in srgb, var(--blue-100) 60%, var(--white));
+  --border:      rgba(0, 53, 240, 0.10);   /* --blue-500 @ 10% */
+  --border-hi:   rgba(0, 53, 240, 0.22);   /* --blue-500 @ 22% */
 
   /* Accent / interaction */
-  --accent:      var(--blue-vivid);
-  --accent-soft: rgba(0, 53, 240, 0.18);
-  --accent-glow: rgba(98, 199, 255, 0.35);
+  --accent:      var(--blue-500);
+  --accent-soft: rgba(0, 53, 240, 0.18);   /* --blue-500 @ 18% */
+  --accent-glow: rgba(98, 199, 255, 0.35); /* --blue-400 @ 35% */
 
   /* Success (completion) */
-  --green:        #0a8a5e;
-  --green-soft:   rgba(10, 138, 94, 0.10);
-  --green-border: rgba(10, 138, 94, 0.28);
+  --green:        var(--green-600);
+  --green-soft:   var(--green-100);
+  --green-border: rgba(0, 76, 44, 0.28);   /* --green-600 @ 28% */
 
-  /* Gold (visited) — reuses brand blue */
-  --gold-soft:   rgba(0, 53, 240, 0.07);
+  /* Visited-choice tint */
+  --visited-soft: rgba(0, 53, 240, 0.07);  /* --blue-500 @ 7% */
 
-  /* Text */
-  --text:        #01308E;
-  --text-2:      #2552b0;
-  --text-3:      #6e8eca;
-  --text-muted:  #a0b4d6;
-  --disabled:    #c5d8ef;
+  /* Text hierarchy */
+  --text:        var(--blue-700);
+  --text-2:      color-mix(in srgb, var(--blue-500) 55%, var(--blue-700));
+  --text-3:      color-mix(in srgb, var(--blue-400) 55%, var(--blue-700));
+  --text-muted:  color-mix(in srgb, var(--blue-300) 60%, var(--blue-700));
+  --disabled:    color-mix(in srgb, var(--blue-300) 40%, var(--white));
 
   /* Typography */
   --font: 'Beatrice', system-ui, sans-serif;
@@ -126,7 +161,7 @@ body {
 #header h1 {
   font-size: clamp(1.4rem, 4.5vw, 2.15rem);
   font-weight: 800;
-  color: var(--blue-deep);
+  color: var(--blue-700);
   letter-spacing: -0.02em;
   line-height: 1.1;
 }
@@ -134,7 +169,7 @@ body {
 #header h1 em {
   font-style: italic;
   font-weight: 300;
-  color: var(--blue-vivid);
+  color: var(--blue-500);
 }
 
 #header .subtitle {
@@ -169,7 +204,7 @@ body {
 #progress-bar-track {
   width: 100%;
   height: 6px;
-  background: rgba(0, 53, 240, 0.10);
+  background: var(--border);
   border-radius: 99px;
   overflow: hidden;
   border: 1px solid var(--border);
@@ -179,12 +214,12 @@ body {
   height: 100%;
   width: 0%;
   border-radius: 99px;
-  background: linear-gradient(90deg, var(--blue-vivid) 0%, var(--sky-mid) 100%);
+  background: linear-gradient(90deg, var(--blue-500) 0%, var(--blue-400) 100%);
   transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #progress-bar-fill.complete {
-  background: linear-gradient(90deg, var(--green) 0%, #34d399 100%);
+  background: linear-gradient(90deg, var(--green-600) 0%, var(--green-400) 100%);
 }
 
 #progress-pct {
@@ -195,7 +230,7 @@ body {
   transition: color 0.4s;
 }
 
-#progress-pct.complete { color: var(--green); }
+#progress-pct.complete { color: var(--green-600); }
 
 
 /* ── Book card ──────────────────────────────────────────────── */
@@ -220,9 +255,9 @@ body {
   border-radius: var(--radius) var(--radius) 0 0;
   background: linear-gradient(90deg,
     transparent 0%,
-    var(--sky-mid) 20%,
-    var(--blue-vivid) 50%,
-    var(--sky-mid) 80%,
+    var(--blue-400) 20%,
+    var(--blue-500) 50%,
+    var(--blue-400) 80%,
     transparent 100%);
   transition: background 0.6s ease;
 }
@@ -230,9 +265,9 @@ body {
 #book.complete::before {
   background: linear-gradient(90deg,
     transparent 0%,
-    rgba(10, 138, 94, 0.45) 20%,
-    var(--green) 50%,
-    rgba(10, 138, 94, 0.45) 80%,
+    var(--green-300) 20%,
+    var(--green-600) 50%,
+    var(--green-300) 80%,
     transparent 100%);
 }
 
@@ -256,7 +291,7 @@ body {
 #splash-title {
   font-size: 1.3rem;
   font-weight: 300;
-  color: var(--blue-deep);
+  color: var(--blue-700);
   line-height: 1.6;
 }
 
@@ -267,8 +302,8 @@ body {
 }
 
 #start-btn {
-  background: var(--blue-vivid);
-  color: #ffffff;
+  background: var(--blue-500);
+  color: var(--white);
   border: none;
   border-radius: var(--radius-sm);
   padding: 0.85rem 2.5rem;
@@ -300,7 +335,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.20em;
   text-transform: uppercase;
-  color: rgba(0, 53, 240, 0.45);
+  color: rgba(0, 53, 240, 0.45); /* --blue-500 @ 45% */
 }
 
 /* Q row — echoes the choice the user just made */
@@ -324,8 +359,8 @@ body {
   min-width: 1.6rem;
 }
 
-.qa-label.q { color: var(--sky-mid); }
-.qa-label.a { color: var(--blue-vivid); }
+.qa-label.q { color: var(--blue-400); }
+.qa-label.a { color: var(--blue-500); }
 
 #qa-question-text {
   font-size: 0.95rem;
@@ -350,7 +385,7 @@ body {
   flex-shrink: 0;
   padding-top: 0.3em;
   min-width: 1.6rem;
-  color: var(--blue-vivid);
+  color: var(--blue-500);
   visibility: hidden;
 }
 
@@ -359,7 +394,7 @@ body {
   font-size: 1.10rem;
   font-weight: 300;
   line-height: 1.85;
-  color: var(--blue-deep);
+  color: var(--blue-700);
 }
 
 /* Audio indicator */
@@ -389,7 +424,7 @@ body {
   display: block;
   width: 2.5px;
   border-radius: 3px;
-  background: var(--blue-vivid);
+  background: var(--blue-500);
   animation: waveBounce 0.85s ease-in-out infinite;
 }
 
@@ -464,7 +499,7 @@ body {
   content: '›';
   font-size: 1.2rem;
   line-height: 1;
-  color: var(--blue-vivid);
+  color: var(--blue-500);
   flex-shrink: 0;
   transition: transform 0.15s;
 }
@@ -482,7 +517,7 @@ body {
 
 /* Visited forward choices */
 .choice-btn.visited {
-  background: var(--gold-soft);
+  background: var(--visited-soft);
   border-color: rgba(0, 53, 240, 0.15);
   color: var(--text-2);
 }
@@ -490,7 +525,7 @@ body {
 .choice-btn.visited::before {
   content: '✓';
   font-size: 0.85rem;
-  color: var(--blue-vivid);
+  color: var(--blue-500);
 }
 
 /* Back buttons */
@@ -532,7 +567,7 @@ body {
   border-radius: var(--radius-sm);
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--green);
+  color: var(--green-600);
 }
 
 #complete-banner.visible { display: flex; }
@@ -561,7 +596,7 @@ body {
 
 #status code {
   background: var(--surface-2);
-  color: var(--blue-vivid);
+  color: var(--blue-500);
   padding: 0.15em 0.45em;
   border-radius: 5px;
   font-style: normal;
