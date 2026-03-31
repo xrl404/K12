@@ -221,9 +221,8 @@ function scheduleThankYouAudio() {
 
 function flushPendingThankYou() {
   if (!pendingThankYou) return;
-  const url = pendingThankYou;
   pendingThankYou = null;
-  playAudioFile(resolveAudioSrc(url), url);
+  thanks();
 }
 
 
@@ -594,3 +593,109 @@ window.VFT = {
     }
   },
 };
+
+// - thanks screen with confetti this will also later allow us
+// - to easily add rewards for fully completing the tour
+function thanks() {
+  // Build overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'thanks-overlay';
+  overlay.innerHTML = `
+    <canvas id="confetti-canvas"></canvas>
+    <div id="thanks-card">
+      <div id="thanks-icon">🎉</div>
+      <p id="thanks-text">${data.thank_you_text?.trim() || "Thanks for exploring with me!"}</p>
+      <button id="thanks-close">Close</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+ 
+  // Close button
+  document.getElementById('thanks-close').addEventListener('click', () => {
+    overlay.classList.add('thanks-fade-out');
+    overlay.addEventListener('animationend', () => overlay.remove(), { once: true });
+  });
+ 
+  // Play thank-you audio
+  if (data.thank_you) {
+    const safePath = sanitiseAudioPath(data.thank_you);
+    if (safePath) {
+      const url = buildAudioUrl(safePath);
+      playAudioFile(resolveAudioSrc(url), url);
+    }
+  }
+ 
+  // Kick off confetti
+  runConfetti(document.getElementById('confetti-canvas'));
+}
+ 
+ 
+// ── Confetti engine ──────────────────────────────────────────
+// Pure-canvas, no dependencies. Spawns a burst of coloured
+// particles that fall and fade out over ~4 seconds.
+ 
+function runConfetti(canvas) {
+  const ctx    = canvas.getContext('2d');
+  const W      = canvas.width  = window.innerWidth;
+  const H      = canvas.height = window.innerHeight;
+  const COLORS = ['#7F77DD','#1D9E75','#EF9F27','#D85A30','#D4537E','#378ADD','#E24B4A'];
+  const COUNT  = 160;
+ 
+  const pieces = Array.from({ length: COUNT }, () => ({
+    x:      Math.random() * W,
+    y:      Math.random() * -H * 0.5,           // start above viewport
+    r:      4 + Math.random() * 6,              // radius
+    dx:     (Math.random() - 0.5) * 2,          // horizontal drift
+    dy:     2 + Math.random() * 4,              // fall speed
+    rot:    Math.random() * Math.PI * 2,
+    drot:   (Math.random() - 0.5) * 0.15,       // spin speed
+    color:  COLORS[Math.floor(Math.random() * COLORS.length)],
+    shape:  Math.random() > 0.5 ? 'rect' : 'circle',
+    alpha:  1,
+  }));
+ 
+  let start = null;
+  const DURATION = 4000; // ms
+ 
+  function frame(ts) {
+    if (!start) start = ts;
+    const elapsed = ts - start;
+    ctx.clearRect(0, 0, W, H);
+ 
+    let alive = false;
+    for (const p of pieces) {
+      p.x   += p.dx;
+      p.y   += p.dy;
+      p.rot += p.drot;
+      // Fade out in the last second
+      if (elapsed > DURATION - 1000) {
+        p.alpha = Math.max(0, p.alpha - 0.02);
+      }
+      if (p.alpha <= 0) continue;
+      alive = true;
+ 
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+ 
+      if (p.shape === 'rect') {
+        ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r);
+      } else {
+        ctx.beginPath();
+        ctx.arc(0, 0, p.r / 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+ 
+    if (alive && elapsed < DURATION + 500) {
+      requestAnimationFrame(frame);
+    } else {
+      ctx.clearRect(0, 0, W, H);
+    }
+  }
+ 
+  requestAnimationFrame(frame);
+}

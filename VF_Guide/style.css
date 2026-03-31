@@ -620,3 +620,159 @@ body {
   #splash { padding: 2.25rem 1.5rem; }
   #progress-widget { min-width: 90px; }
 }
+
+/* -- the thanks screen stuff ---------------------------------------------*/
+@keyframes thanks-backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes thanks-card-pop {
+  0%   { transform: scale(0.72) translateY(18px); opacity: 0; }
+  65%  { transform: scale(1.03) translateY(-3px); opacity: 1; }
+  100% { transform: scale(1)    translateY(0);    opacity: 1; }
+}
+@keyframes thanks-fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@keyframes thanks-icon-bounce {
+  0%,100% { transform: translateY(0)    scale(1);    }
+  40%     { transform: translateY(-10px) scale(1.15); }
+  60%     { transform: translateY(-4px)  scale(0.97); }
+}
+@keyframes thanks-stripe-slide {
+  from { background-position: 0%   0; }
+  to   { background-position: 200% 0; }
+}
+ 
+#thanks-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(1, 48, 142, 0.38);
+  backdrop-filter: blur(3px);
+  z-index: 9999;
+  animation: thanks-backdrop-in 0.35s ease forwards;
+  padding: 1rem;
+}
+ 
+#thanks-overlay.thanks-closing {
+  animation: thanks-fade-out 0.28s ease forwards;
+}
+ 
+#confetti-canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+}
+ 
+#thanks-card {
+  position: relative;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  padding: 2.75rem 2.5rem 2.25rem;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  animation: thanks-card-pop 0.55s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+  overflow: hidden;
+}
+ 
+#thanks-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--green-300) 20%,
+    var(--green-600) 50%,
+    var(--green-300) 80%,
+    transparent 100%);
+  background-size: 200% 100%;
+  animation: thanks-stripe-slide 2.5s linear infinite;
+}
+ 
+#thanks-icon {
+  font-size: 2.75rem;
+  line-height: 1;
+  margin-bottom: 1.1rem;
+  display: block;
+  animation: thanks-icon-bounce 0.7s ease 0.3s both;
+}
+ 
+#thanks-heading {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--blue-700);
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
+}
+ 
+#thanks-text {
+  font-size: 0.92rem;
+  font-weight: 300;
+  color: var(--text-3);
+  line-height: 1.75;
+  margin-bottom: 1.75rem;
+}
+ 
+#thanks-audio-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-3);
+  margin-bottom: 1.5rem;
+  min-height: 1.1rem;
+  transition: opacity 0.3s;
+}
+ 
+#thanks-audio-indicator.hidden { opacity: 0; }
+ 
+.thanks-wave {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+ 
+.thanks-wave span {
+  display: block;
+  width: 2.5px;
+  border-radius: 3px;
+  background: var(--blue-500);
+  animation: waveBounce 0.85s ease-in-out infinite;
+}
+ 
+.thanks-wave span:nth-child(1) { height: 5px;  animation-delay: 0.00s; }
+.thanks-wave span:nth-child(2) { height: 11px; animation-delay: 0.12s; }
+.thanks-wave span:nth-child(3) { height: 7px;  animation-delay: 0.24s; }
+.thanks-wave span:nth-child(4) { height: 13px; animation-delay: 0.06s; }
+.thanks-wave span:nth-child(5) { height: 6px;  animation-delay: 0.18s; }
+ 
+#thanks-close {
+  background: var(--blue-500);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 2.25rem;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 53, 240, 0.30);
+  transition: opacity 0.15s, transform 0.10s, box-shadow 0.15s;
+}
+ 
+#thanks-close:hover  { opacity: 0.90; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0, 53, 240, 0.40); }
+#thanks-close:active { transform: scale(0.98); }
