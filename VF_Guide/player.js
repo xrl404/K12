@@ -125,7 +125,36 @@ function buildAudioUrl(audioPath) {
 }
 
 
+// ── Subtree completion ───────────────────────────────────────
+// A choice button only gets the ✓ checkmark when the node it points
+// to has been visited AND every forward-reachable descendant of that
+// node has also been visited.  Back-tagged choices are ignored entirely
+// so cycles in the graph don't cause infinite recursion.
+
+function isSubtreeComplete(nodeId, seen = new Set()) {
+  // Guard against cycles (shouldn't happen in well-formed data, but safe).
+  if (seen.has(nodeId)) return true;
+  seen.add(nodeId);
+
+  // The node itself must have been visited.
+  if (!visitedNodes.has(nodeId)) return false;
+
+  const node = data.nodes[nodeId];
+  if (!node) return true; // unknown node — don't block completion
+
+  const forwardChoices = (node.choices || []).filter(c => !c.back);
+
+  // Leaf node (no forward choices) — already visited, so complete.
+  if (forwardChoices.length === 0) return true;
+
+  // Every forward child must itself be subtree-complete.
+  return forwardChoices.every(c => isSubtreeComplete(c.next, seen));
+}
+
+
 // ── Progress ─────────────────────────────────────────────────
+// Progress counts visited nodes as before.  Completion fires when
+// the entire tree rooted at start_node is fully explored.
 
 function updateProgress() {
   const pct   = totalNodes > 0 ? Math.round((visitedNodes.size / totalNodes) * 100) : 0;
@@ -136,8 +165,10 @@ function updateProgress() {
   fill.style.width  = pct + '%';
   pctEl.textContent = pct + '%';
 
-  if (pct >= 100 && !tripComplete) {
+  if (!tripComplete && isSubtreeComplete(data.start_node)) {
     tripComplete = true;
+    fill.style.width = '100%';
+    pctEl.textContent = '100%';
     fill.classList.add('complete');
     pctEl.classList.add('complete');
     document.getElementById('book').classList.add('complete');
@@ -322,7 +353,7 @@ function renderShell() {
   const choices = el('div', { id: 'choices' });
   choices.appendChild(el('div', { id: 'choices-label', text: 'Your response' }));
 
-  // Completion banner — hidden until all nodes are visited.
+  // Completion banner — hidden until the full tree is explored.
   // Default text is overridden by thank_you_text in the data file if present.
   const banner = el('div', { id: 'complete-banner' });
   banner.appendChild(el('span', { className: 'cb-icon', text: '🎉' }));
@@ -381,8 +412,8 @@ function playAudioFile(src, canonicalUrl) {
     isPlaying = false;
     setWave(false);
     lockChoices(false);
-    player.onended = null;
-    player.onerror = null;
+    player.onended  = null;
+    player.onerror  = null;
 
     // Play the thank-you clip if it was queued while narration ran.
     if (pendingThankYou) flushPendingThankYou();
@@ -455,7 +486,8 @@ function renderChoices(node) {
 
   forwardChoices.forEach(choice => {
     const btn = el('button', { className: 'choice-btn fade-in', text: choice.text });
-    if (visitedNodes.has(choice.next)) btn.classList.add('visited');
+    // ✓ only appears once the entire subtree under this choice is fully explored.
+    if (isSubtreeComplete(choice.next)) btn.classList.add('visited');
     btn.addEventListener('click', () => choiceClicked(choice));
     container.insertBefore(btn, banner);
   });
@@ -525,16 +557,24 @@ init();
 
 // ── Dev shortcut ─────────────────────────────────────────────
 // In the browser console, type:  VFT.fastMode()
-// Audio will jump to near its end so each clip lasts ~0.1 s,
-// letting you skip through nodes instantly without changing any logic.
-// Restore normal playback with:  VFT.fastMode(false)
+// Each audio clip will be trimmed to ~0.1 s so you can skip through
+// nodes instantly without any logic changing.
+// Restore with:  VFT.fastMode(false)
 
 function _fastModeHandler() {
-  // Seek to 0.1 s before the end so the native 'ended' event fires
-  // naturally — all done-callbacks (unlock choices, thank-you, etc.)
-  // run exactly as they would in production.
-  if (isFinite(player.duration)) {
-    player.currentTime = Math.max(0, player.duration - 0.1);
+  // duration is not available at 'play' time — wait for metadata.
+  // If it's already known (e.g. cached blob), seek immediately.
+  const seek = () => {
+    if (isFinite(player.duration) && player.duration > 0.15) {
+      player.currentTime = player.duration - 0.1;
+    }
+  };
+
+  if (isFinite(player.duration) && player.duration > 0) {
+    seek();
+  } else {
+    // Metadata not yet loaded — wait for it, then seek once.
+    player.addEventListener('loadedmetadata', seek, { once: true });
   }
 }
 
