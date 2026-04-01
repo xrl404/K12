@@ -1,4 +1,4 @@
-# VirtualFieldtrip
+# VirtualFieldtrip Guided Tour
 
 > **Hi Stride Peoples:** Demo available [here](https://xrl404.github.io/K12/VF_Guide/Main.html?file=K12/VF_Guide/Virtual_Fieldtrips/Louvre_Museum/Louvre_Museum.VFJF). If i was not supposed to use Stride assets, please reach out and they will be removed.
 
