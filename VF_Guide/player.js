@@ -25,17 +25,6 @@
    URL FORMAT
    -------------------------------------------------------------
    ?file=K12/Virtual_Fieldtrips/TripName/TripName.VFJF
-
-   IFRAME USAGE
-   -------------------------------------------------------------
-   When the tour completes, player.js posts a message to the
-   parent window so the embedding page can close / hide the iframe:
-
-     window.addEventListener('message', (e) => {
-       if (e.data?.type === 'vft-complete') {
-         // e.g. document.getElementById('tour-frame').remove();
-       }
-     });
    ============================================================= */
 
 
@@ -177,29 +166,7 @@ function updateProgress() {
     fill.classList.add('complete');
     pctEl.classList.add('complete');
     document.getElementById('book').classList.add('complete');
-    showCompleteBanner();
     scheduleThankYouAudio();
-  }
-}
-
-function showCompleteBanner() {
-  const banner = document.getElementById('complete-banner');
-  if (!banner) return;
-
-  // Replace default text with thank_you_text from the data file if provided.
-  const thankYouText = data.thank_you_text?.trim();
-  if (thankYouText) {
-    const textNode = banner.querySelector('.cb-text');
-    if (textNode) textNode.textContent = thankYouText;
-  }
-
-  banner.classList.add('visible');
-
-  // Notify the parent page so it can close / hide the iframe.
-  try {
-    window.parent.postMessage({ type: 'vft-complete' }, '*');
-  } catch (e) {
-    // Silently ignore — not critical if there's no parent.
   }
 }
 
