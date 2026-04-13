@@ -235,9 +235,10 @@ async function init() {
 
   totalNodes = Object.keys(data.nodes).length;
 
-  // Update page title and the header h1.
+  // Update page title, header h1, and the background image.
   const tripTitle = String(data.name || 'Virtual Field Trip').trim();
   document.title = tripTitle;
+  document.body.style.backgroundImage = `url('${data.root}/bg.png')`;
   setHeaderTitle(tripTitle);
 
   // Pre-fetch start-node audio and the optional thank-you clip early.
