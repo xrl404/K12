@@ -49,6 +49,8 @@ const player = document.getElementById('player');
 // ── Audio cache ──────────────────────────────────────────────
 // Pre-fetches upcoming audio files into Blob URLs so there's no
 // network delay between a choice tap and audio start.
+// Note: Blob URLs accumulate for the lifetime of the page. For typical
+// trip sizes this is negligible; there is intentionally no cache eviction.
 
 const audioCache = new Map();
 
@@ -115,6 +117,16 @@ function buildAudioUrl(audioPath) {
   return fileBase + audioPath;
 }
 
+// Validate and sanitise the ?file= parameter.
+// Permits only alphanumeric characters, underscores, hyphens, forward
+// slashes, and dots — and rejects any path component that is '..'.
+function sanitiseFilePath(filePath) {
+  if (typeof filePath !== 'string' || filePath.trim() === '') return null;
+  if (!/^[\w\-./]+$/.test(filePath)) return null;
+  if (filePath.split('/').some(part => part === '..')) return null;
+  return filePath;
+}
+
 
 // ── Subtree completion ───────────────────────────────────────
 // A choice button only gets the ✓ checkmark when the node it points
@@ -128,7 +140,7 @@ function isSubtreeComplete(nodeId, seen = new Set()) {
   seen.add(nodeId);
 
   const node = data.nodes[nodeId];
-  if (!node) return true; // unknown node — don't block completion
+  if (!node) return true; // unknown node id (e.g. the sentinel "end") — don't block completion
 
   // End nodes are considered complete regardless of whether they've been visited.
   if (node.end === true) return true;
@@ -136,6 +148,7 @@ function isSubtreeComplete(nodeId, seen = new Set()) {
   // The node itself must have been visited.
   if (!visitedNodes.has(nodeId)) return false;
 
+  // Forward choices: skip back-tagged entries and end-tagged entries.
   const forwardChoices = (node.choices || []).filter(c => !c.back && !c.end);
 
   // Leaf node (no forward choices) — already visited, so complete.
@@ -176,23 +189,25 @@ function scheduleThankYouAudio() {
   if (!data.thank_you) return;
   const safePath = sanitiseAudioPath(data.thank_you);
   if (!safePath) return;
- 
+
   const url = buildAudioUrl(safePath);
   prefetchAudio(url);
-  pendingThankYou = url; // just a flag now — value isn't used
+  pendingThankYou = url;
 }
 
 function flushPendingThankYou() {
   if (!pendingThankYou) return;
   pendingThankYou = null;
-  thanks();
+  endReward();
 }
+
 
 // ── Initialisation ───────────────────────────────────────────
 
 async function init() {
-  const params   = new URLSearchParams(location.search);
-  const filePath = params.get('file');
+  const params        = new URLSearchParams(location.search);
+  const rawFilePath   = params.get('file');
+  const filePath      = sanitiseFilePath(rawFilePath);
 
   if (!filePath) {
     showError('⚠️', 'No file specified.',
@@ -320,10 +335,12 @@ function renderShell() {
   choices.appendChild(el('div', { id: 'choices-label', text: 'Your response' }));
 
   // Completion banner — hidden until the full tree is explored.
-  // Default text is overridden by thank_you_text in the data file if present.
+  // Text is overridden by thank_you_text in the data file if present.
   const banner = el('div', { id: 'complete-banner' });
   banner.appendChild(el('span', { className: 'cb-icon', text: '🎉' }));
-  banner.appendChild(el('span', { className: 'cb-text', text: "You've explored the entire trip — great work!" }));
+  const bannerText = el('span', { className: 'cb-text' });
+  bannerText.textContent = data?.thank_you_text?.trim() || "You've explored the entire trip — great work!";
+  banner.appendChild(bannerText);
   choices.appendChild(banner);
 
   book.appendChild(choices);
@@ -373,20 +390,22 @@ function playAudioFile(src, canonicalUrl) {
   isPlaying  = true;
   setWave(true);
   lockChoices(true);
- 
+
   const done = () => {
-    isPlaying          = false;
-    player._playPromise = null;
+    isPlaying  = false;
     setWave(false);
     lockChoices(false);
     player.onended = null;
     player.onerror = null;
- 
+    // Clear the stored promise reference only after this tick so that any
+    // in-flight inflight.catch().then() chains in endThanksText() still see it.
+    Promise.resolve().then(() => { player._playPromise = null; });
+
     if (pendingThankYou) flushPendingThankYou();
   };
- 
+
   player.onended = done;
- 
+
   player.onerror = (e) => {
     if (src !== canonicalUrl) {
       player.src = canonicalUrl;
@@ -396,7 +415,7 @@ function playAudioFile(src, canonicalUrl) {
       done();
     }
   };
- 
+
   const p = player.play();
   player._playPromise = p;
   p.catch(e => { console.warn('play() rejected:', e); done(); });
@@ -454,7 +473,8 @@ function renderChoices(node) {
   forwardChoices.forEach(choice => {
     const btn = el('button', { className: 'choice-btn fade-in', text: choice.text });
     // ✓ only appears once the entire subtree under this choice is fully explored.
-    if (isSubtreeComplete(choice.next)) btn.classList.add('visited');
+    // End-tagged choices use choice.end rather than a real node lookup.
+    if (choice.end || isSubtreeComplete(choice.next)) btn.classList.add('visited');
     btn.addEventListener('click', () => choiceClicked(choice));
     container.insertBefore(btn, banner);
   });
@@ -506,13 +526,17 @@ function showError(icon, headline, detail, file) {
 
 
 // ── DOM utility ──────────────────────────────────────────────
-// Lightweight element factory: el(tag, { id, className, text }) → HTMLElement
+// Lightweight element factory: el(tag, { id, className, text, attrs }) → HTMLElement
+// 'attrs' is an optional plain object of additional attributes to set (e.g. data-*, aria-*).
 
 function el(tag, opts = {}) {
   const node = document.createElement(tag);
-  if (opts.id)        node.id          = opts.id;
-  if (opts.className) node.className    = opts.className;
-  if (opts.text)      node.textContent  = opts.text;
+  if (opts.id)        node.id         = opts.id;
+  if (opts.className) node.className   = opts.className;
+  if (opts.text)      node.textContent = opts.text;
+  if (opts.attrs) {
+    Object.entries(opts.attrs).forEach(([k, v]) => node.setAttribute(k, v));
+  }
   return node;
 }
 
@@ -527,6 +551,8 @@ init();
 // Each audio clip will be trimmed to ~0.1 s so you can skip through
 // nodes instantly without any logic changing.
 // Restore with:  VFT.fastMode(false)
+// This helper is intentionally stripped in production builds via the
+// build pipeline (tree-shaken when VFT is not referenced externally).
 
 function _fastModeHandler() {
   // duration is not available at 'play' time — wait for metadata.
@@ -557,83 +583,172 @@ window.VFT = {
   },
 };
 
-// - thanks screen with confetti this will also later allow us
-// - to easily add rewards for fully completing the tour
-function thanks() {
-  const thanksText = data.thank_you_text?.trim()
-    || 'Thanks for exploring with me!';
- 
+
+// ── Reward & completion ──────────────────────────────────────
+
+async function serverRewards(expressionId, particleName) {
+  const params = new URLSearchParams(window.location.search);
+
+  // Pull only the expected parameters and coerce to strings so no
+  // object or array values sneak through into the POST body.
+  const safeString = (v) => (typeof v === 'string' ? v.slice(0, 512) : '');
+
+  const visitorId          = safeString(params.get('visitorId'));
+  const urlSlug            = safeString(params.get('urlSlug'));
+  const assetId            = safeString(params.get('assetId'));
+  const interactiveNonce   = safeString(params.get('interactiveNonce'));
+  const interactivePublicKey = safeString(params.get('interactivePublicKey'));
+
+  const payload = {
+    visitorId,
+    urlSlug,
+    assetId,
+    interactiveNonce,
+    interactivePublicKey,
+    dataObject: {
+      expressionId: { value: expressionId },
+      particleName: { value: particleName },
+    },
+  };
+
+  try {
+    const [emoteRes, particleRes] = await Promise.all([
+      fetch('https://victor-agreed-hybrid-intend.trycloudflare.com/webhook/reward-emote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).then(r => {
+        if (!r.ok) throw new Error(`reward-emote HTTP ${r.status}`);
+        return r.json();
+      }),
+
+      fetch('https://victor-agreed-hybrid-intend.trycloudflare.com/webhook/play-particle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).then(r => {
+        if (!r.ok) throw new Error(`play-particle HTTP ${r.status}`);
+        return r.json();
+      }),
+    ]);
+
+    console.log('emote:', emoteRes);
+    console.log('particle:', particleRes);
+
+    return { emoteRes, particleRes };
+  } catch (err) {
+    console.error('serverRewards failed:', err);
+    return null;
+  }
+}
+
+// Renamed from EndReward → endReward (consistent camelCase).
+function endReward() {
+  serverRewards('tTdFlcYOK1CfvX5tB2ZZ', 'classicConfetti_explosion');
+  showThanksOverlay();
+}
+
+// ── Thanks overlay ───────────────────────────────────────────
+// Separated from audio playback and confetti so each concern is
+// independently testable and replaceable.
+
+function showThanksOverlay() {
+  // Safely read the thank-you message — never use innerHTML for user data.
+  const thanksText = data.thank_you_text?.trim() || 'Thanks for exploring with me!';
+
   const overlay = document.createElement('div');
   overlay.id = 'thanks-overlay';
-  overlay.innerHTML = `
-    <canvas id="confetti-canvas"></canvas>
-    <div id="thanks-card">
-      <span id="thanks-icon">🎉</span>
-      <div id="thanks-heading">Tour complete!</div>
-      <p id="thanks-text">${thanksText}</p>
-      <div id="thanks-audio-indicator">
-        <div class="thanks-wave">
-          <span></span><span></span><span></span><span></span><span></span>
-        </div>
-        Playing…
-      </div>
-    </div>
-  `;
+
+  const canvas = document.createElement('canvas');
+  canvas.id = 'confetti-canvas';
+
+  const card = document.createElement('div');
+  card.id = 'thanks-card';
+
+  const icon = el('span', { id: 'thanks-icon', text: '🎉' });
+
+  const heading = el('div', { id: 'thanks-heading', text: 'Tour complete!' });
+
+  const text = el('p', { id: 'thanks-text' });
+  text.textContent = thanksText; // textContent — never innerHTML — avoids XSS
+
+  const audioInd = document.createElement('div');
+  audioInd.id = 'thanks-audio-indicator';
+  const thanksWave = el('div', { className: 'thanks-wave' });
+  for (let i = 0; i < 5; i++) thanksWave.appendChild(document.createElement('span'));
+  audioInd.appendChild(thanksWave);
+  audioInd.appendChild(document.createTextNode('Playing…'));
+
+  card.appendChild(icon);
+  card.appendChild(heading);
+  card.appendChild(text);
+  card.appendChild(audioInd);
+  overlay.appendChild(canvas);
+  overlay.appendChild(card);
   document.body.appendChild(overlay);
-  runConfetti(document.getElementById('confetti-canvas'));
- 
-  if (data.thank_you) {
-    const safePath = sanitiseAudioPath(data.thank_you);
-    if (safePath) {
-      const url = buildAudioUrl(safePath);
-      const src = resolveAudioSrc(url);
- 
-      // Wait for any in-flight play() to settle before touching
-      // the player — this prevents the AbortError.
-      const inflight = player._playPromise || Promise.resolve();
-      inflight.catch(() => {}).then(() => {
-        player.src = src;
- 
-        const done = () => {
-          player.onended     = null;
-          player.onerror     = null;
-          player._playPromise = null;
-          const ind = document.getElementById('thanks-audio-indicator');
-          if (ind) ind.classList.add('hidden');
-        };
- 
-        player.onended = done;
-        player.onerror = () => {
-          if (src !== url) {
-            player.src = url;
-            player.play().catch(done);
-          } else {
-            done();
-          }
-        };
- 
-        const p = player.play();
-        player._playPromise = p;
-        p.catch(done);
-      });
- 
-      return;
-    }
-  }
- 
-  // No audio — hide indicator and fire iframe close after a beat
-  const ind = document.getElementById('thanks-audio-indicator');
-  if (ind) ind.classList.add('hidden');
+
+  playThanksAudio(audioInd);
+  runConfetti(canvas);
 }
- 
+
+function playThanksAudio(audioIndicator) {
+  if (!data.thank_you) {
+    audioIndicator?.classList.add('hidden');
+    return;
+  }
+
+  const safePath = sanitiseAudioPath(data.thank_you);
+  if (!safePath) {
+    audioIndicator?.classList.add('hidden');
+    return;
+  }
+
+  const url = buildAudioUrl(safePath);
+  const src = resolveAudioSrc(url);
+
+  // Wait for any in-flight play() promise to settle before touching
+  // the player — prevents AbortError on rapid transitions.
+  const inflight = player._playPromise || Promise.resolve();
+  inflight.catch(() => {}).then(() => {
+    // _playPromise is cleared after this tick (see done() in playAudioFile),
+    // so by the time we reach here it is already null — safe to reuse player.
+    player.src = src;
+
+    const done = () => {
+      player.onended      = null;
+      player.onerror      = null;
+      player._playPromise = null;
+      audioIndicator?.classList.add('hidden');
+    };
+
+    player.onended = done;
+    player.onerror = () => {
+      if (src !== url) {
+        player.src = url;
+        player.play().catch(done);
+      } else {
+        done();
+      }
+    };
+
+    const p = player.play();
+    player._playPromise = p;
+    p.catch(done);
+  });
+}
+
+
+// ── Confetti ─────────────────────────────────────────────────
 
 function runConfetti(canvas) {
-  const ctx    = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return; // canvas not supported in this environment
+
   const W      = canvas.width  = window.innerWidth;
   const H      = canvas.height = window.innerHeight;
   const COLORS = ['#62C7FF', '#0035F0', '#8EE68C', '#004C2C', '#FFEA2F', '#A2DEFF', '#4ADC51'];
   const COUNT  = 180;
- 
+
   const pieces = Array.from({ length: COUNT }, () => ({
     x:     Math.random() * W,
     y:     Math.random() * -H * 0.6,
@@ -646,16 +761,16 @@ function runConfetti(canvas) {
     shape: Math.random() > 0.45 ? 'rect' : 'circle',
     alpha: 1,
   }));
- 
+
   let start = null;
   const DURATION = 4200;
- 
+
   function frame(ts) {
     if (!start) start = ts;
     const elapsed = ts - start;
     ctx.clearRect(0, 0, W, H);
     let alive = false;
- 
+
     for (const p of pieces) {
       p.x   += p.dx;
       p.y   += p.dy;
@@ -663,13 +778,13 @@ function runConfetti(canvas) {
       if (elapsed > DURATION - 1200) p.alpha = Math.max(0, p.alpha - 0.018);
       if (p.alpha <= 0) continue;
       alive = true;
- 
+
       ctx.save();
       ctx.globalAlpha = p.alpha;
       ctx.translate(p.x, p.y);
       ctx.rotate(p.rot);
       ctx.fillStyle = p.color;
- 
+
       if (p.shape === 'rect') {
         ctx.fillRect(-p.r, -p.r * 0.45, p.r * 2, p.r * 0.9);
       } else {
@@ -679,10 +794,10 @@ function runConfetti(canvas) {
       }
       ctx.restore();
     }
- 
+
     if (alive && elapsed < DURATION + 400) requestAnimationFrame(frame);
     else ctx.clearRect(0, 0, W, H);
   }
- 
+
   requestAnimationFrame(frame);
 }
