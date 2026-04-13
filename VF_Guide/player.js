@@ -613,7 +613,7 @@ async function serverRewards(expressionId, particleName) {
 
   try {
     const [emoteRes, particleRes] = await Promise.all([
-      fetch('https://victor-agreed-hybrid-intend.trycloudflare.com/webhook/reward-emote', {
+      fetch('https://design-brandon-llp-smooth.trycloudflare.com/webhook/reward-emote', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -622,7 +622,7 @@ async function serverRewards(expressionId, particleName) {
         return r.json();
       }),
 
-      fetch('https://victor-agreed-hybrid-intend.trycloudflare.com/webhook/play-particle', {
+      fetch('https://design-brandon-llp-smooth.trycloudflare.com/webhook/play-particle', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
