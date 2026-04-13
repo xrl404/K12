@@ -236,7 +236,7 @@ async function init() {
   totalNodes = Object.keys(data.nodes).length;
 
   // Update page title and the header h1.
-  const tripTitle = String(data.root || 'Virtual Field Trip').trim();
+  const tripTitle = String(data.name || 'Virtual Field Trip').trim();
   document.title = tripTitle;
   setHeaderTitle(tripTitle);
 
