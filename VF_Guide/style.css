@@ -298,6 +298,19 @@ body {
 #splash-icon {
   font-size: 3rem;
   line-height: 1;
+  position: relative;
+  color: transparent; /* hides emoji text */
+}
+
+#splash-icon::before {
+  content: "";
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background-image: url("Strider Leaning on Tail 2.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 #splash-title {
