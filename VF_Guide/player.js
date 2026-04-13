@@ -587,7 +587,7 @@ window.VFT = {
 
 // ── Reward & completion ──────────────────────────────────────
 
-async function serverRewards(expressionId, particleName) {
+async function serverRewards(itemId, particleName) {
   const params = new URLSearchParams(window.location.search);
 
   // Pull only the expected parameters and coerce to strings so no
@@ -607,14 +607,14 @@ async function serverRewards(expressionId, particleName) {
     interactiveNonce,
     interactivePublicKey,
     dataObject: {
-      expressionId: { value: expressionId },
+      itemId: { value: itemId },
       particleName: { value: particleName },
     },
   };
 
   try {
     const [emoteRes, particleRes] = await Promise.all([
-      fetch('https://bear-poor-interviews-effort.trycloudflare.com/webhook/reward-emote', {
+      fetch('https://bear-poor-interviews-effort.trycloudflare.com/webhook/grant-inventory-item', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
