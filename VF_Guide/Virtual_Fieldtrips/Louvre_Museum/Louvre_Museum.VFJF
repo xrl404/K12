@@ -1,5 +1,6 @@
 {
-  "root": "Louvre Museum",
+  "root": "Louvre_Museum",
+  "name": "Louvre Museum",
   "start_node": "entrance",
   "thank_you": "audio/thank_you.mp3",
   "nodes": {
