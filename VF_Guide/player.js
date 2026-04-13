@@ -645,7 +645,7 @@ async function serverRewards(itemId, particleName) {
 
 // Renamed from EndReward → endReward (consistent camelCase).
 function endReward() {
-  serverRewards('tTdFlcYOK1CfvX5tB2ZZ', 'classicConfetti_explosion');
+  serverRewards('1d4eee32-409e-45e5-8f0a-b215f6b7cd54', 'classicConfetti_explosion');
   showThanksOverlay();
 }
 
