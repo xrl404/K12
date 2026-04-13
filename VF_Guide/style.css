@@ -106,10 +106,10 @@ body {
   line-height: 1.6;
   color: var(--text);
   background-color: var(--bg);
-  background-image:
-    url("bg.png");
-    radial-gradient(ellipse 70% 50% at 5% 10%,  rgba(162, 222, 255, 0.55) 0%, transparent 65%),
-    radial-gradient(ellipse 55% 45% at 95% 90%, rgba(98, 199, 255, 0.30) 0%, transparent 60%);
+  background-image: url("bg.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
   min-height: 100vh;
   display: flex;
   align-items: center;
