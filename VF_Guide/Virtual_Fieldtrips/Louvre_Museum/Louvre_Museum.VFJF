@@ -5,7 +5,7 @@
   "thank_you": "audio/thank_you.mp3",
   "nodes": {
     "entrance": {
-      "text": "Welcome to the Louvre! It’s the biggest art museum in the world. What would you like to know about the Louvre?",
+      "text": "Welcome to the Louvre! It's the biggest art museum in the world. What would you like to know about the Louvre?",
       "audio": "audio/entrance.mp3",
       "choices": [
         {
@@ -21,7 +21,7 @@
           "next": "pyramid"
         },
         {
-          "text": "Wasn’t there a real museum heist at the Louvre recently?",
+          "text": "Wasn't there a real museum heist at the Louvre recently?",
           "next": "heist"
         },
         {
@@ -31,7 +31,7 @@
       ]
     },
     "what_is_louvre": {
-      "text": "The Louvre used to be a palace where kings lived. Now it’s a museum with thousands of artworks!",
+      "text": "What is the Louvre? Great question! The Louvre used to be a palace where kings lived. Now it's a museum with thousands of artworks!",
       "audio": "audio/what_is_louvre.mp3",
       "choices": [
         {
@@ -54,7 +54,7 @@
       ]
     },
     "kings": {
-      "text": "Kings like Louis XIV lived here before moving to Versailles.",
+      "text": "Who lived here? Well, kings like Louis XIV called the Louvre home before eventually moving to the Palace of Versailles.",
       "audio": "audio/kings.mp3",
       "choices": [
         {
@@ -65,7 +65,7 @@
       ]
     },
     "age": {
-      "text": "It started as a fortress over 800 years ago!",
+      "text": "How old is it? You might be surprised — it started as a fortress over 800 years ago!",
       "audio": "audio/age.mp3",
       "choices": [
         {
@@ -76,7 +76,7 @@
       ]
     },
     "museum_reason": {
-      "text": "After the French Revolution, it was turned into a place for everyone to enjoy art.",
+      "text": "Why did it become a museum? After the French Revolution, leaders decided it should be turned into a place for everyone to enjoy art — not just royalty!",
       "audio": "audio/museum_reason.mp3",
       "choices": [
         {
@@ -87,7 +87,7 @@
       ]
     },
     "famous_art": {
-      "text": "There are many famous works of art here! Do you want to hear about one?",
+      "text": "What famous art is here? Oh, there are so many incredible works! There are paintings, statues, and ancient treasures. Do you want to hear about one?",
       "audio": "audio/famous_art.mp3",
       "choices": [
         {
@@ -110,7 +110,7 @@
       ]
     },
     "mona_lisa": {
-      "text": "The Mona Lisa is one of the most famous paintings in the world!",
+      "text": "The Mona Lisa! Now that's a great choice. The Mona Lisa is one of the most famous paintings in the entire world, and it's right here at the Louvre!",
       "audio": "audio/mona_lisa.mp3",
       "choices": [
         {
@@ -133,7 +133,7 @@
       ]
     },
     "mona_famous": {
-      "text": "People love her mysterious smile and how realistic she looks.",
+      "text": "Why is the Mona Lisa so famous? People are drawn to her mysterious smile and how incredibly realistic she looks — even after 500 years!",
       "audio": "audio/mona_famous.mp3",
       "choices": [
         {
@@ -144,7 +144,7 @@
       ]
     },
     "mona_artist": {
-      "text": "It was painted by Leonardo da Vinci.",
+      "text": "Who painted the Mona Lisa? It was created by the legendary Leonardo da Vinci, one of the greatest artists and inventors who ever lived!",
       "audio": "audio/mona_artist.mp3",
       "choices": [
         {
@@ -155,7 +155,7 @@
       ]
     },
     "mona_smile": {
-      "text": "No one knows for sure—that’s part of the mystery!",
+      "text": "Why is she smiling? That's the big mystery! No one knows for sure what she's smiling about — and that mystery is part of what makes her so fascinating!",
       "audio": "audio/mona_smile.mp3",
       "choices": [
         {
@@ -166,11 +166,11 @@
       ]
     },
     "statue": {
-      "text": "One famous statue is the Venus de Milo.",
+      "text": "A statue! One of the most famous ones here is the Venus de Milo. She's a stunning ancient Greek statue — though you might notice something unusual about her!",
       "audio": "audio/statue.mp3",
       "choices": [
         {
-          "text": "Why doesn’t it have arms?",
+          "text": "Why doesn't it have arms?",
           "next": "statue_arms"
         },
         {
@@ -185,7 +185,7 @@
       ]
     },
     "statue_arms": {
-      "text": "They were lost a long time ago, and no one knows exactly how.",
+      "text": "Why doesn't she have arms? Great eye! Her arms were lost a very long time ago, and to this day, no one knows exactly how or when it happened.",
       "audio": "audio/statue_arms.mp3",
       "choices": [
         {
@@ -196,7 +196,7 @@
       ]
     },
     "statue_age": {
-      "text": "It’s over 2,000 years old!",
+      "text": "How old is the Venus de Milo? Get ready for this — she's over 2,000 years old! Ancient Greeks carved her long before your great-great-great-grandparents were even born!",
       "audio": "audio/statue_age.mp3",
       "choices": [
         {
@@ -207,7 +207,7 @@
       ]
     },
     "egypt": {
-      "text": "The museum has ancient Egyptian artifacts like mummies!",
+      "text": "Egyptian stuff! You're in luck — the Louvre has an amazing collection of ancient Egyptian artifacts, including real mummies!",
       "audio": "audio/egypt.mp3",
       "choices": [
         {
@@ -226,7 +226,7 @@
       ]
     },
     "mummy": {
-      "text": "A mummy is a preserved body from ancient times.",
+      "text": "What is a mummy? A mummy is a body from ancient times that was carefully preserved so it wouldn't decay. Scientists can still study them thousands of years later!",
       "audio": "audio/mummy.mp3",
       "choices": [
         {
@@ -237,7 +237,7 @@
       ]
     },
     "afterlife": {
-      "text": "They believed it helped people live in the afterlife.",
+      "text": "Why did Egyptians make mummies? Ancient Egyptians believed that preserving the body helped the person's spirit live on in the afterlife. It was a very important part of their culture!",
       "audio": "audio/afterlife.mp3",
       "choices": [
         {
@@ -248,7 +248,7 @@
       ]
     },
     "pyramid": {
-      "text": "The glass pyramid was added in 1989 as a modern entrance.",
+      "text": "Why is there a pyramid outside? That's a fun story! The giant glass pyramid was added in 1989 as a brand new modern entrance to the museum.",
       "audio": "audio/pyramid.mp3",
       "choices": [
         {
@@ -267,7 +267,7 @@
       ]
     },
     "glass": {
-      "text": "So people can see the old building around it.",
+      "text": "Why is the pyramid made of glass? It was designed that way so visitors can see the beautiful old historic building all around it — the new and old side by side!",
       "audio": "audio/glass.mp3",
       "choices": [
         {
@@ -278,7 +278,7 @@
       ]
     },
     "opinion": {
-      "text": "Some people love it, some didn’t at first—but now it’s very famous!",
+      "text": "Do people like the pyramid? It's a great debate! Some people loved it right away, but others didn't like mixing something so modern with the old palace. Now though, it's become one of the most famous landmarks in all of Paris!",
       "audio": "audio/opinion.mp3",
       "choices": [
         {
@@ -289,7 +289,7 @@
       ]
     },
     "heist": {
-      "text": "Yes! Thieves pulled off a bold robbery in October 2025 right in the middle of the day.",
+      "text": "A real heist at the Louvre? Yes! Thieves pulled off a very bold robbery in October 2025, right in the middle of the day with visitors all around!",
       "audio": "audio/heist.mp3",
       "choices": [
         {
@@ -316,7 +316,7 @@
       ]
     },
     "heist_entry": {
-      "text": "They snuck in through a window and dressed like construction workers to blend in.",
+      "text": "How did they break in during the day? Cleverly! They snuck in through a window and dressed up like construction workers so they would blend right in with the crowds.",
       "audio": "audio/heist_entry.mp3",
       "choices": [
         {
@@ -327,7 +327,7 @@
       ]
     },
     "heist_time": {
-      "text": "The whole heist took under 10 minutes.",
+      "text": "How long did the heist take? Believe it or not, the whole thing was over in under 10 minutes! Fast and sneaky.",
       "audio": "audio/heist_time.mp3",
       "choices": [
         {
@@ -338,7 +338,7 @@
       ]
     },
     "heist_items": {
-      "text": "They stole valuable French Crown Jewels.",
+      "text": "What did they steal? The thieves made off with priceless French Crown Jewels — some of the most treasured objects in all of French history!",
       "audio": "audio/heist_items.mp3",
       "choices": [
         {
@@ -349,7 +349,7 @@
       ]
     },
     "heist_caught": {
-      "text": "Several suspects were later arrested, but many jewels are still missing!",
+      "text": "Were they ever caught? Police did arrest several suspects later on, but here's the wild part — many of the stolen jewels are still missing to this day!",
       "audio": "audio/heist_caught.mp3",
       "choices": [
         {
@@ -360,7 +360,7 @@
       ]
     },
     "visit": {
-      "text": "The Louvre is in Paris, France. It is very far away. But you can click on the glass pyramid here for a virtual tour.",
+      "text": "How do you visit the Louvre? The Louvre is located in Paris, France — which is very far away! But you can click on the glass pyramid right here for a virtual tour anytime you'd like.",
       "audio": "audio/visit.mp3",
       "choices": [
         {
