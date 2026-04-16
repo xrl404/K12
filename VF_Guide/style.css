@@ -298,10 +298,10 @@ body {
 #splash-icon-v1 {
   display: none;
   display: inline-block;
-  width: 4.25rem;
-  height: 4.25rem;
+  width: 7.25rem;
+  height: 7.25rem;
 
-  background-image: url("images/strider.png");
+  background-image: url("images/FA_Image.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
