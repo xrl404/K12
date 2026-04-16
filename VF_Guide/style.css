@@ -295,12 +295,13 @@ body {
   text-align: center;
 }
 
-#splash-icon {
+#splash-icon-v1 {
+  display: none;
   display: inline-block;
   width: 4.25rem;
   height: 4.25rem;
 
-  background-image: url("Strider Leaning on Tail 2.png");
+  background-image: url("images/strider.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;

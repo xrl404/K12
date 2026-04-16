@@ -278,7 +278,7 @@ function showSplash(tripTitle, hasAudio) {
   book.textContent = '';
 
   const splash = el('div', { id: 'splash' });
-  splash.appendChild(el('span', { id: 'splash-icon'}));
+  splash.appendChild(el('span', { id: 'splash-icon-v1'}));
   splash.appendChild(el('div', { id: 'splash-title', text: tripTitle }));
   splash.appendChild(el('p', {
     id: 'splash-hint',
