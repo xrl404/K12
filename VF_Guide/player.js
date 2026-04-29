@@ -15,8 +15,8 @@
          "end":     true,                   // optional — marks a branch as complete without requiring a visit
          "choices": [
            { "text": "Choice label",  "next": "other_node_id" },
-           { "text": "Let's go back", "next": "prev_node_id",  "back": true }
-           { "text": "End tour",      "next": "end", "end": true }
+           { "text": "Let's go back", "next": "prev_node_id",  "back": true } // this is if it goes back at all to a parent node
+           { "text": "End tour",      "next": "end", "end": true } // this is if it goes to a 
          ]
        }
      }
@@ -614,7 +614,7 @@ async function serverRewards(itemId, particleName) {
 
   try {
     const [emoteRes, particleRes] = await Promise.all([
-      fetch('https://occasions-technical-deutsch-soonest.trycloudflare.com/webhook/grant-inventory-item', {
+      fetch('https://consultant-baptist-showing-selections.trycloudflare.com/webhook/grant-inventory-item', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -623,7 +623,7 @@ async function serverRewards(itemId, particleName) {
         return r.json();
       }),
 
-      fetch('https://occasions-technical-deutsch-soonest.trycloudflare.com/webhook/play-particle', {
+      fetch('https://consultant-baptist-showing-selections.trycloudflare.com/webhook/play-particle', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
