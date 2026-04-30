@@ -405,7 +405,7 @@ function playAudioFile(src, canonicalUrl) {
     if (pendingThankYou) flushPendingThankYou();
   };
 
-  player.onended = done;
+  player.onended = () => { done(); autoBackIfNeeded(); };
 
   player.onerror = (e) => {
     if (src !== canonicalUrl) {
@@ -422,6 +422,18 @@ function playAudioFile(src, canonicalUrl) {
   p.catch(e => { console.warn('play() rejected:', e); done(); });
 }
 
+function autoBackIfNeeded() {
+  const node = currentNode ? data.nodes[currentNode] : null;
+  if (!node?.choices) return;
+
+  const forwardChoices = node.choices.filter(c => !c.back && !c.end);
+  const backChoices    = node.choices.filter(c =>  c.back);
+
+  if (forwardChoices.length === 0 && backChoices.length === 1) {
+    // Small delay so the user sees the node text briefly before being taken back.
+    setTimeout(() => choiceClicked(backChoices[0]), 800);
+  }
+}
 
 // ── Rendering helpers ────────────────────────────────────────
 
@@ -722,7 +734,7 @@ function playThanksAudio(audioIndicator) {
       audioIndicator?.classList.add('hidden');
     };
 
-    player.onended = done;
+    player.onended = () => { done(); autoBackIfNeeded(); };
     player.onerror = () => {
       if (src !== url) {
         player.src = url;
