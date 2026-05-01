@@ -626,7 +626,7 @@ async function serverRewards(itemId, particleName) {
 
   try {
     const [emoteRes, particleRes] = await Promise.all([
-      fetch('https://consultant-baptist-showing-selections.trycloudflare.com/webhook/grant-inventory-item', {
+      fetch('https://transform-spirituality-controversial-saturday.trycloudflare.com/webhook/grant-inventory-item', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -635,7 +635,7 @@ async function serverRewards(itemId, particleName) {
         return r.json();
       }),
 
-      fetch('https://consultant-baptist-showing-selections.trycloudflare.com/webhook/play-particle', {
+      fetch('https://transform-spirituality-controversial-saturday.trycloudflare.com/webhook/play-particle', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
