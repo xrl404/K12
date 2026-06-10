@@ -1,0 +1,721 @@
+{
+  "root": "K12 Virtual Academy FAQ Tour",
+  "start_node": "welcome",
+  "thank_you": "audio/thankyou.mp3",
+  "thank_you_text": "Thanks for exploring K12 Virtual Academy with us!",
+  "nodes": {
+    "welcome": {
+      "text": "Welcome to the K12 Virtual Academy FAQ Tour! What would you like to learn about today?",
+      "audio": "audio/welcome.mp3",
+      "choices": [
+        { "text": "Courses & Learning", "next": "courses_overview" },
+        { "text": "Daily Life & Schedule", "next": "daily_life" },
+        { "text": "Teachers & Support", "next": "teachers_support" },
+        { "text": "Socializing & Activities", "next": "socializing" },
+        { "text": "Technology & Platform", "next": "technology" },
+        { "text": "End tour", "next": "end", "end": true }
+      ]
+    },
+
+    "courses_overview": {
+      "text": "There are lots of courses to explore! K12-powered schools offer core classes like math, science, English, and history, plus electives and career-focused classes depending on your grade level and school. Your exact course options may depend on your academy and grade.",
+      "audio": "audio/courses_overview.mp3",
+      "choices": [
+        { "text": "Can I take advanced classes?", "next": "advanced_classes" },
+        { "text": "Are there elective classes?", "next": "electives" },
+        { "text": "Can high schoolers prepare for careers?", "next": "career_prep" },
+        { "text": "What is the Flex Program?", "next": "flex_program" },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "advanced_classes": {
+      "text": "Absolutely! Many K12-powered schools offer Honors and Advanced Placement (AP®) classes for students who want an extra challenge.",
+      "audio": "audio/advanced_classes.mp3",
+      "choices": [
+        { "text": "Tell me about electives", "next": "electives" },
+        { "text": "Back to Courses", "next": "courses_overview", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "electives": {
+      "text": "Yes! Many schools offer electives like art, music, coding, business, world languages, and career exploration courses.",
+      "audio": "audio/electives.mp3",
+      "choices": [
+        { "text": "Tell me about career prep", "next": "career_prep" },
+        { "text": "Back to Courses", "next": "courses_overview", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "career_prep": {
+      "text": "They can! Some schools offer career pathways and career-prep programs that help students explore future jobs and learn real-world skills.",
+      "audio": "audio/career_prep.mp3",
+      "choices": [
+        { "text": "What is the Flex Program?", "next": "flex_program" },
+        { "text": "Back to Courses", "next": "courses_overview", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "flex_program": {
+      "text": "The Flex Program gives students more control over their schedule while still getting support from teachers. Students can often complete lessons at their own pace while checking in regularly with teachers for guidance. It's designed for families who need extra flexibility.",
+      "audio": "audio/flex_program.mp3",
+      "choices": [
+        { "text": "Do Flex students still have teachers?", "next": "flex_teachers" },
+        { "text": "Do Flex students attend live classes?", "next": "flex_live" },
+        { "text": "Can students leave the Flex Program later?", "next": "flex_leave" },
+        { "text": "Back to Courses", "next": "courses_overview", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "flex_teachers": {
+      "text": "Yes! Flex students still work with certified teachers who provide support, answer questions, and help students stay on track.",
+      "audio": "audio/flex_teachers.mp3",
+      "choices": [
+        { "text": "Do Flex students attend live classes?", "next": "flex_live" },
+        { "text": "Back to Flex Program", "next": "flex_program", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "flex_live": {
+      "text": "Sometimes! Live sessions may be optional depending on the program, and students can attend when they need extra help or instruction.",
+      "audio": "audio/flex_live.mp3",
+      "choices": [
+        { "text": "Can students leave the Flex Program later?", "next": "flex_leave" },
+        { "text": "Back to Flex Program", "next": "flex_program", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "flex_leave": {
+      "text": "Yes. Many Flex programs allow students to return to a more traditional online schedule if needed.",
+      "audio": "audio/flex_leave.mp3",
+      "choices": [
+        { "text": "Back to Flex Program", "next": "flex_program", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+
+    "daily_life": {
+      "text": "A typical day may include live classes, independent lessons, assignments, reading, and breaks. Every student's schedule can look a little different depending on their grade level and program. Online learning combines structure with flexibility.",
+      "audio": "audio/daily_life.mp3",
+      "choices": [
+        { "text": "Am I able to have a flexible schedule?", "next": "flexible_schedule" },
+        { "text": "How much time will I spend online?", "next": "time_online" },
+        { "text": "What will be expected of me?", "next": "expectations" },
+        { "text": "What is the role of a Learning Coach?", "next": "learning_coach" },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "flexible_schedule": {
+      "text": "Yes, many K12-powered programs offer flexibility. While students still need to complete assignments and attend required activities, families often have more control over when learning happens. The amount of flexibility depends on your school and program.",
+      "audio": "audio/flexible_schedule.mp3",
+      "choices": [
+        { "text": "Do I still have deadlines?", "next": "deadlines" },
+        { "text": "How much time online?", "next": "time_online" },
+        { "text": "Back to Daily Life", "next": "daily_life", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "deadlines": {
+      "text": "Yes. Students are still expected to complete assignments and meet academic requirements.",
+      "audio": "audio/deadlines.mp3",
+      "choices": [
+        { "text": "Back to Daily Life", "next": "daily_life", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "time_online": {
+      "text": "Online learning schedules vary by grade level and school. Students typically spend several hours each day completing lessons, attending live classes, and working on assignments. Your teacher and school will provide a schedule that works for your program.",
+      "audio": "audio/time_online.mp3",
+      "choices": [
+        { "text": "Will I be staring at a screen all day?", "next": "screen_time" },
+        { "text": "Do younger students spend less time online?", "next": "younger_students_time" },
+        { "text": "Back to Daily Life", "next": "daily_life", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "screen_time": {
+      "text": "No. Many lessons include reading, writing, projects, hands-on activities, and breaks away from the computer.",
+      "audio": "audio/screen_time.mp3",
+      "choices": [
+        { "text": "Back to Time Online", "next": "time_online", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "younger_students_time": {
+      "text": "Yes. Younger students often spend less time on screens and more time on offline learning activities.",
+      "audio": "audio/younger_students_time.mp3",
+      "choices": [
+        { "text": "Back to Time Online", "next": "time_online", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "expectations": {
+      "text": "As an online student, you'll be expected to attend required classes, complete assignments, communicate respectfully, and take responsibility for your learning. Staying organized and managing your time are important skills for success. Remember, your teachers and Learning Coach are there to help you along the way.",
+      "audio": "audio/expectations.mp3",
+      "choices": [
+        { "text": "What if I fall behind?", "next": "fall_behind" },
+        { "text": "How can I stay organized?", "next": "stay_organized" },
+        { "text": "Back to Daily Life", "next": "daily_life", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "fall_behind": {
+      "text": "Reach out to your teacher as soon as possible so they can help create a plan.",
+      "audio": "audio/fall_behind.mp3",
+      "choices": [
+        { "text": "Back to Expectations", "next": "expectations", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "stay_organized": {
+      "text": "Using calendars, schedules, and assignment checklists can be very helpful.",
+      "audio": "audio/stay_organized.mp3",
+      "choices": [
+        { "text": "Back to Expectations", "next": "expectations", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "learning_coach": {
+      "text": "A Learning Coach is usually a parent or another trusted adult who helps support the student during online learning. They help students stay organized, keep track of assignments, and build strong learning habits. Teachers still provide instruction, grading, and academic support.",
+      "audio": "audio/learning_coach.mp3",
+      "choices": [
+        { "text": "Do high school students still need one?", "next": "hs_learning_coach" },
+        { "text": "Does the Learning Coach teach the lessons?", "next": "coach_teach" },
+        { "text": "How much time does a Learning Coach spend helping?", "next": "coach_time" },
+        { "text": "How can a Learning Coach best support their student?", "next": "coach_support" },
+        { "text": "Back to Daily Life", "next": "daily_life", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "hs_learning_coach": {
+      "text": "Yes, but the role changes as students get older. High school students are expected to be more independent while Learning Coaches provide encouragement and oversight.",
+      "audio": "audio/hs_learning_coach.mp3",
+      "choices": [
+        { "text": "Back to Learning Coach", "next": "learning_coach", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "coach_teach": {
+      "text": "No. Teachers handle instruction, grading, and feedback while Learning Coaches help students stay on schedule.",
+      "audio": "audio/coach_teach.mp3",
+      "choices": [
+        { "text": "Back to Learning Coach", "next": "learning_coach", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "coach_time": {
+      "text": "It depends on grade level. Younger students usually need more support, while older students often work more independently.",
+      "audio": "audio/coach_time.mp3",
+      "choices": [
+        { "text": "Back to Learning Coach", "next": "learning_coach", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "coach_support": {
+      "text": "Learning Coaches can help students create routines, stay organized, and manage their time effectively. They can encourage students when learning feels challenging and celebrate progress along the way. Think of them as an important member of your success team!",
+      "audio": "audio/coach_support.mp3",
+      "choices": [
+        { "text": "Can Learning Coaches contact teachers?", "next": "coach_contact_teacher" },
+        { "text": "Back to Learning Coach", "next": "learning_coach", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "coach_contact_teacher": {
+      "text": "Yes! Learning Coaches often work closely with teachers to help students succeed.",
+      "audio": "audio/coach_contact_teacher.mp3",
+      "choices": [
+        { "text": "Back to Learning Coach", "next": "learning_coach", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+
+    "teachers_support": {
+      "text": "Students regularly interact with teachers through live classes, feedback on assignments, messages, office hours, and one-on-one support when needed. Teachers play an active role in helping students succeed. You're never expected to learn entirely on your own.",
+      "audio": "audio/teachers_support.mp3",
+      "choices": [
+        { "text": "Are there live classes?", "next": "live_classes" },
+        { "text": "How do I message my teacher?", "next": "message_teacher" },
+        { "text": "How does K12 support mental health?", "next": "mental_health" },
+        { "text": "How does K12 manage bullying?", "next": "bullying" },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "live_classes": {
+      "text": "Yes! Students learn from state-certified teachers and attend live online classes called Class Connect sessions. Teachers provide instruction, answer questions, grade assignments, and help students succeed.",
+      "audio": "audio/live_classes.mp3",
+      "choices": [
+        { "text": "Can students ask teachers questions?", "next": "ask_teachers" },
+        { "text": "What are Class Connect sessions?", "next": "class_connect" },
+        { "text": "Back to Teachers & Support", "next": "teachers_support", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "ask_teachers": {
+      "text": "Absolutely! Teachers are available during classes, office hours, and through school communication tools.",
+      "audio": "audio/ask_teachers.mp3",
+      "choices": [
+        { "text": "Back to Live Classes", "next": "live_classes", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "class_connect": {
+      "text": "They're live online classes where students meet with teachers and classmates in real time.",
+      "audio": "audio/class_connect.mp3",
+      "choices": [
+        { "text": "How do I access Class Connect sessions?", "next": "access_class_connect" },
+        { "text": "Back to Teachers & Support", "next": "teachers_support", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "access_class_connect": {
+      "text": "To join a Class Connect Session, log into the OLS and look for the scheduled session in your course or calendar. Click the session link when it's time to attend.",
+      "audio": "audio/access_class_connect.mp3",
+      "choices": [
+        { "text": "What if I miss a session?", "next": "miss_session" },
+        { "text": "Back to Teachers & Support", "next": "teachers_support", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "miss_session": {
+      "text": "Check with your teacher about available recordings or make-up options.",
+      "audio": "audio/miss_session.mp3",
+      "choices": [
+        { "text": "Back to Teachers & Support", "next": "teachers_support", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "message_teacher": {
+      "text": "You can usually contact your teacher through your school's approved communication tools, such as messages within your learning platform or school email. Teachers are happy to help when you have questions!",
+      "audio": "audio/message_teacher.mp3",
+      "choices": [
+        { "text": "Can my parent contact my teacher too?", "next": "parent_contact_teacher" },
+        { "text": "Back to Teachers & Support", "next": "teachers_support", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "parent_contact_teacher": {
+      "text": "Yes! Learning Coaches and parents can often communicate with teachers as well.",
+      "audio": "audio/parent_contact_teacher.mp3",
+      "choices": [
+        { "text": "Back to Teachers & Support", "next": "teachers_support", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "mental_health": {
+      "text": "K12-powered schools work to create safe, supportive learning environments where students can succeed. Schools may offer counselors, student support services, and resources that promote student well-being. If you're struggling, it's always important to reach out to a trusted adult or school staff member.",
+      "audio": "audio/mental_health.mp3",
+      "choices": [
+        { "text": "How can I talk to a school counselor?", "next": "counselor" },
+        { "text": "What if I'm feeling stressed?", "next": "stressed" },
+        { "text": "Back to Teachers & Support", "next": "teachers_support", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "counselor": {
+      "text": "Reach out to your teacher or school administration. Schools have counselors available to support students academically and personally.",
+      "audio": "audio/counselor.mp3",
+      "choices": [
+        { "text": "Back to Mental Health", "next": "mental_health", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "stressed": {
+      "text": "Talk with a trusted adult, teacher, counselor, or family member. You're never expected to handle challenges alone.",
+      "audio": "audio/stressed.mp3",
+      "choices": [
+        { "text": "Back to Mental Health", "next": "mental_health", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "bullying": {
+      "text": "K12-powered schools take bullying seriously and work hard to create respectful learning environments. Schools provide guidance, reporting procedures, and support for students who experience bullying. Students should always report concerns to a trusted adult or school staff member.",
+      "audio": "audio/bullying.mp3",
+      "choices": [
+        { "text": "What is cyberbullying?", "next": "cyberbullying" },
+        { "text": "Can students report bullying?", "next": "report_bullying" },
+        { "text": "Back to Teachers & Support", "next": "teachers_support", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "cyberbullying": {
+      "text": "Cyberbullying is bullying that happens through online communication, social media, games, or digital platforms.",
+      "audio": "audio/cyberbullying.mp3",
+      "choices": [
+        { "text": "Back to Bullying", "next": "bullying", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "report_bullying": {
+      "text": "Yes. Students and families should report bullying concerns to school staff right away. Student safety is always our number 1 concern.",
+      "audio": "audio/report_bullying.mp3",
+      "choices": [
+        { "text": "Back to Bullying", "next": "bullying", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+
+    "socializing": {
+      "text": "There are lots of ways to meet other students! K12-powered schools offer clubs, virtual activities, contests, field trips, school events, and other social opportunities where students can connect and make friends.",
+      "audio": "audio/socializing.mp3",
+      "choices": [
+        { "text": "Can I join clubs?", "next": "clubs" },
+        { "text": "What is the K12 Zone?", "next": "k12_zone" },
+        { "text": "Are there extracurricular activities?", "next": "extracurriculars" },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "clubs": {
+      "text": "Yes! Many schools offer clubs focused on art, gaming, leadership, science, music, and more. Check out the Club tents to learn more!",
+      "audio": "audio/clubs.mp3",
+      "choices": [
+        { "text": "Are there field trips and school events?", "next": "field_trips" },
+        { "text": "Can I join more than one club?", "next": "multiple_clubs" },
+        { "text": "Back to Socializing", "next": "socializing", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "field_trips": {
+      "text": "There can be! Many schools organize field trips, dances, graduations, and community events.",
+      "audio": "audio/field_trips.mp3",
+      "choices": [
+        { "text": "Back to Socializing", "next": "socializing", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "multiple_clubs": {
+      "text": "Often, yes! Students are encouraged to explore activities that interest them.",
+      "audio": "audio/multiple_clubs.mp3",
+      "choices": [
+        { "text": "Back to Clubs", "next": "clubs", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "k12_zone": {
+      "text": "The K12 Zone is a great place to meet other students in a safe, moderated environment. You can participate in games, events, clubs, activities, challenges, and conversations with students from across the country. It's designed to help students connect, have fun, and build friendships.",
+      "audio": "audio/k12_zone.mp3",
+      "choices": [
+        { "text": "Can I chat with other students?", "next": "zone_chat" },
+        { "text": "What kind of events are held in the K12 Zone?", "next": "zone_events" },
+        { "text": "Back to Socializing", "next": "socializing", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "zone_chat": {
+      "text": "Yes! The K12 Zone includes moderated chat features designed to help students connect safely.",
+      "audio": "audio/zone_chat.mp3",
+      "choices": [
+        { "text": "Back to K12 Zone", "next": "k12_zone", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "zone_events": {
+      "text": "The K12 Zone hosts many events, like talent shows, movie-nights, conventions, and award ceremonies. The possibilities are endless!",
+      "audio": "audio/zone_events.mp3",
+      "choices": [
+        { "text": "Back to K12 Zone", "next": "k12_zone", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "extracurriculars": {
+      "text": "Yes! Many K12-powered schools offer clubs, competitions, student organizations, field trips, and special events. These activities help students explore interests, develop skills, and make friends. Social opportunities are an important part of the online school experience.",
+      "audio": "audio/extracurriculars.mp3",
+      "choices": [
+        { "text": "Are activities available for all grade levels?", "next": "activities_grades" },
+        { "text": "Do extracurriculars happen online or in person?", "next": "activities_format" },
+        { "text": "Back to Socializing", "next": "socializing", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "activities_grades": {
+      "text": "Yes, though the available activities might be different depending on your grade level.",
+      "audio": "audio/activities_grades.mp3",
+      "choices": [
+        { "text": "Back to Extracurriculars", "next": "extracurriculars", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "activities_format": {
+      "text": "Some activities are virtual while others may take place locally depending on the school.",
+      "audio": "audio/activities_format.mp3",
+      "choices": [
+        { "text": "Back to Extracurriculars", "next": "extracurriculars", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+
+    "technology": {
+      "text": "You'll access your courses through the Online School, often called the OLS. Once you log in, you'll see your Dashboard where you can open courses, view assignments, and track your progress.",
+      "audio": "audio/technology.mp3",
+      "choices": [
+        { "text": "What is the OLS and what platforms will I use?", "next": "ols_platforms" },
+        { "text": "What materials do I need?", "next": "materials" },
+        { "text": "Login and account help", "next": "login_help" },
+        { "text": "Technical problems", "next": "tech_problems" },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "ols_platforms": {
+      "text": "You'll spend most of your time in the Online School (OLS), and some schools may also use Canvas for certain courses. Your teachers will show you exactly where to find everything you need.",
+      "audio": "audio/ols_platforms.mp3",
+      "choices": [
+        { "text": "How do I navigate my courses?", "next": "navigate_courses" },
+        { "text": "Where do I see announcements?", "next": "announcements" },
+        { "text": "How do I view my grades?", "next": "view_grades" },
+        { "text": "How do I view my calendar?", "next": "view_calendar" },
+        { "text": "Back to Technology", "next": "technology", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "navigate_courses": {
+      "text": "Each course is organized into lessons, activities, and assignments. Use the course menu to move between sections and follow the lesson sequence provided by your teacher.",
+      "audio": "audio/navigate_courses.mp3",
+      "choices": [
+        { "text": "How do I know what to do next?", "next": "what_next" },
+        { "text": "Back to OLS & Platforms", "next": "ols_platforms", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "what_next": {
+      "text": "Your Dashboard and course pages usually highlight upcoming work.",
+      "audio": "audio/what_next.mp3",
+      "choices": [
+        { "text": "Back to Navigate Courses", "next": "navigate_courses", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "announcements": {
+      "text": "You can usually find announcements on your Dashboard, course homepage, or class pages. It's a good idea to check them regularly so you don't miss important updates.",
+      "audio": "audio/announcements.mp3",
+      "choices": [
+        { "text": "How often should I check?", "next": "check_frequency" },
+        { "text": "Back to OLS & Platforms", "next": "ols_platforms", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "check_frequency": {
+      "text": "Checking daily is a great habit.",
+      "audio": "audio/check_frequency.mp3",
+      "choices": [
+        { "text": "Back to Announcements", "next": "announcements", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "view_grades": {
+      "text": "You can view your grades through the gradebook or grades section of your learning platform. Checking regularly can help you stay on top of your progress.",
+      "audio": "audio/view_grades.mp3",
+      "choices": [
+        { "text": "Can my parents see my grades too?", "next": "parent_grades" },
+        { "text": "What if I think a grade is incorrect?", "next": "incorrect_grade" },
+        { "text": "Back to OLS & Platforms", "next": "ols_platforms", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "parent_grades": {
+      "text": "Yes! Parents and Learning Coaches often have access to student progress information.",
+      "audio": "audio/parent_grades.mp3",
+      "choices": [
+        { "text": "Back to Grades", "next": "view_grades", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "incorrect_grade": {
+      "text": "Reach out to your teacher and ask for clarification.",
+      "audio": "audio/incorrect_grade.mp3",
+      "choices": [
+        { "text": "Back to Grades", "next": "view_grades", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "view_calendar": {
+      "text": "Your calendar can usually be found within the OLS or your learning platform. It helps you keep track of assignments, live classes, and important school events.",
+      "audio": "audio/view_calendar.mp3",
+      "choices": [
+        { "text": "Will live classes appear on the calendar?", "next": "calendar_classes" },
+        { "text": "Back to OLS & Platforms", "next": "ols_platforms", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "calendar_classes": {
+      "text": "Usually yes, including scheduled Class Connect Sessions.",
+      "audio": "audio/calendar_classes.mp3",
+      "choices": [
+        { "text": "Back to Calendar", "next": "view_calendar", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "materials": {
+      "text": "Students typically need a reliable internet connection and a computer or school-provided device. Depending on your grade and school, you may also receive learning materials, books, or hands-on activity kits. Your school will let you know exactly what's needed before classes begin.",
+      "audio": "audio/materials.mp3",
+      "choices": [
+        { "text": "Will the school provide materials?", "next": "school_provides" },
+        { "text": "What computer skills do I need?", "next": "computer_skills" },
+        { "text": "Can I use a mobile device?", "next": "mobile_device" },
+        { "text": "Back to Technology", "next": "technology", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "school_provides": {
+      "text": "Many schools provide curriculum materials and learning resources.",
+      "audio": "audio/school_provides.mp3",
+      "choices": [
+        { "text": "Back to Materials", "next": "materials", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "computer_skills": {
+      "text": "Don't worry — you don't need to be a technology expert! Basic skills like using a mouse, typing, opening websites, and navigating online lessons are usually enough to get started.",
+      "audio": "audio/computer_skills.mp3",
+      "choices": [
+        { "text": "What if I'm not good with computers?", "next": "not_tech_savvy" },
+        { "text": "Back to Materials", "next": "materials", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "not_tech_savvy": {
+      "text": "That's okay! You'll learn as you go, and teachers and Learning Coaches can help.",
+      "audio": "audio/not_tech_savvy.mp3",
+      "choices": [
+        { "text": "Back to Computer Skills", "next": "computer_skills", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "mobile_device": {
+      "text": "K12 offers mobile-friendly tools that can be accessed on many smartphones and tablets. However, some coursework may work best on a computer or laptop. Your school can provide device recommendations for the best learning experience.",
+      "audio": "audio/mobile_device.mp3",
+      "choices": [
+        { "text": "What's the best device for online school?", "next": "best_device" },
+        { "text": "Back to Materials", "next": "materials", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "best_device": {
+      "text": "A computer or laptop is usually recommended for the full online learning experience.",
+      "audio": "audio/best_device.mp3",
+      "choices": [
+        { "text": "Back to Mobile Device", "next": "mobile_device", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "login_help": {
+      "text": "No worries — login problems happen sometimes! First, double-check that your username and password are entered correctly. If you're still having trouble, try resetting your password or contact your school's technical support team.",
+      "audio": "audio/login_help.mp3",
+      "choices": [
+        { "text": "How do I reset my password?", "next": "reset_password" },
+        { "text": "How do I find my student ID?", "next": "student_id" },
+        { "text": "I don't see a course in my Dashboard", "next": "missing_course" },
+        { "text": "Back to Technology", "next": "technology", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "reset_password": {
+      "text": "If you've forgotten your password, most students can use the password recovery or reset option on the login page. If that doesn't work, contact your school's support team for assistance.",
+      "audio": "audio/reset_password.mp3",
+      "choices": [
+        { "text": "What if I don't receive the reset email?", "next": "no_reset_email" },
+        { "text": "Back to Login Help", "next": "login_help", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "no_reset_email": {
+      "text": "Check your spam folder first, then contact support if the message doesn't arrive.",
+      "audio": "audio/no_reset_email.mp3",
+      "choices": [
+        { "text": "Back to Reset Password", "next": "reset_password", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "student_id": {
+      "text": "Your student ID number may appear in your student profile, school records, or enrollment documents. If you can't find it, your school office can help.",
+      "audio": "audio/student_id.mp3",
+      "choices": [
+        { "text": "Back to Login Help", "next": "login_help", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "missing_course": {
+      "text": "Don't panic! Sometimes courses take time to appear, or they may not be available yet. If a course is missing, contact your teacher or school support team for assistance.",
+      "audio": "audio/missing_course.mp3",
+      "choices": [
+        { "text": "Could the course start later?", "next": "course_start_later" },
+        { "text": "Back to Login Help", "next": "login_help", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "course_start_later": {
+      "text": "Yes! Some courses become available on different dates throughout the school year.",
+      "audio": "audio/course_start_later.mp3",
+      "choices": [
+        { "text": "Back to Missing Course", "next": "missing_course", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "tech_problems": {
+      "text": "If you're having a technical issue, help is available! You can usually contact your school's Help Desk, technical support team, or use the support resources provided by your school.",
+      "audio": "audio/tech_problems.mp3",
+      "choices": [
+        { "text": "My course is running slowly or freezing", "next": "slow_course" },
+        { "text": "Issues with my school-issued device", "next": "device_issues" },
+        { "text": "How do I update my time zone?", "next": "time_zone" },
+        { "text": "Back to Technology", "next": "technology", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "slow_course": {
+      "text": "That can be frustrating, but there are a few things you can try! Refresh the page, restart your browser, check your internet connection, and close any unnecessary programs or tabs. If the issue continues, contact technical support for help.",
+      "audio": "audio/slow_course.mp3",
+      "choices": [
+        { "text": "Back to Technical Problems", "next": "tech_problems", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "device_issues": {
+      "text": "If your school-issued device isn't working properly, your school's technical support team is ready to help. They can assist with hardware issues, software problems, and device troubleshooting.",
+      "audio": "audio/device_issues.mp3",
+      "choices": [
+        { "text": "Should I try restarting the device first?", "next": "restart_device" },
+        { "text": "What if my device is physically damaged?", "next": "damaged_device" },
+        { "text": "Back to Technical Problems", "next": "tech_problems", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "restart_device": {
+      "text": "Yes! Restarting can often fix common issues and is a great first troubleshooting step.",
+      "audio": "audio/restart_device.mp3",
+      "choices": [
+        { "text": "Back to Device Issues", "next": "device_issues", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "damaged_device": {
+      "text": "Report the issue to your school's support team as soon as possible so they can advise you on next steps.",
+      "audio": "audio/damaged_device.mp3",
+      "choices": [
+        { "text": "Back to Device Issues", "next": "device_issues", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "time_zone": {
+      "text": "If your displayed times don't look right, you may need to update your time zone settings. Check your account settings or profile settings within the platform, and contact support if you need help.",
+      "audio": "audio/time_zone.mp3",
+      "choices": [
+        { "text": "Why is my time zone important?", "next": "why_time_zone" },
+        { "text": "Back to Technical Problems", "next": "tech_problems", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+    "why_time_zone": {
+      "text": "It helps make sure your class schedules, due dates, and calendar events display correctly.",
+      "audio": "audio/why_time_zone.mp3",
+      "choices": [
+        { "text": "Back to Time Zone", "next": "time_zone", "back": true },
+        { "text": "Back to main menu", "next": "welcome", "back": true }
+      ]
+    },
+
+    "end": {
+      "text": "Thanks for exploring K12 Virtual Academy with us!",
+      "audio": "audio/end.mp3",
+      "end": true,
+      "choices": []
+    }
+  }
+}
