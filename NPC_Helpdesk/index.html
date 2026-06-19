@@ -11,6 +11,10 @@
   --color-accent-2:var(--purple-500);--color-accent-3:var(--yellow-500);--color-accent-4:var(--green-400);
   --color-bg:var(--white);--color-bg-alt:var(--blue-100);--color-text:var(--black-300);
 }
+html,body{
+  height:100%;
+  width:100%;
+}
 body{
   font-family:
     Inter,
@@ -23,11 +27,12 @@ body{
 #app{
   display:flex;
   flex-direction:column;
-  height:650px;
+  height:100vh;
+  width:100vw;
   background:var(--color-bg);
-  border-radius:20px;
+  border-radius:0;
   overflow:hidden;
-  border:2px solid var(--blue-300);
+  border:none;
 }
 
 #chat-header{
